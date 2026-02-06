@@ -1,0 +1,59 @@
+# Dependencies
+node_modules/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+ENV/
+build/
+dist/
+*.egg-info/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Build outputs
+*.log
+*.pid
+*.seed
+*.pid.lock
+coverage/
+.nyc_output/
+.cache/
+
+# OS and temp files
+Thumbs.db
+.Spotlight-V100
+.Trashes
+
+# Prevent Windows paths from being committed
+C:/*
+*:\*
+
+# Backend specific
+backend/dist/
+backend/node_modules/
+
+# Frontend specific
+frontend/dist/
+frontend/node_modules/
+
+# Docker
+.docker/
+
+# Logs
+logs/
+*.log

@@ -13,16 +13,16 @@ export class AuditLog {
   @JoinColumn({ name: 'user_id' })
   user!: User | null;
 
-  @Column({ length: 255 })
+  @Column({ type: 'varchar', length: 255 })
   action!: string;
 
-  @Column({ length: 255, nullable: true })
+  @Column({ type: 'varchar', length: 255, nullable: true })
   resource!: string | null;
 
   @Column({ type: 'jsonb', nullable: true })
   details!: Record<string, unknown> | null;
 
-  @Column({ length: 45, nullable: true, name: 'ip_address' })
+  @Column({ type: 'varchar', length: 45, nullable: true, name: 'ip_address' })
   ipAddress!: string | null;
 
   @CreateDateColumn()

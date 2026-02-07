@@ -36,13 +36,24 @@ router.get('/', requireAuth, async (req: Request, res: Response): Promise<void> 
   }
 });
 
+// GET /api/projects/graph/data - Get project graph data (must come before /:name)
+router.get('/graph/data', requireAuth, async (req: Request, res: Response): Promise<void> => {
+  try {
+    const graphData = await projectMapService.getProjectGraph();
+    res.json(graphData);
+  } catch (err) {
+    console.error('Get project graph error:', err);
+    res.status(500).json({ error: 'Failed to get project graph' });
+  }
+});
+
 // GET /api/projects/:name
 router.get('/:name', requireAuth, async (req: Request, res: Response): Promise<void> => {
   try {
     const { name } = req.params;
     const projects = await projectMapService.getProjects();
 
-    const project = projects.find(p => p.name === name);
+    const project = projects.find((p) => p.name === name);
 
     if (!project) {
       res.status(404).json({ error: 'Project not found' });

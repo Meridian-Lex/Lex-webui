@@ -68,6 +68,11 @@ export default function ProjectsPage(): React.ReactElement {
         </div>
       </Header>
       <Content style={{ padding: 24, minHeight: 'calc(100vh - 64px)' }}>
+        <div style={{ marginBottom: 16 }}>
+          <Link to="/projects/graph">
+            <Button type="primary">View Project Graph</Button>
+          </Link>
+        </div>
         <Card title="Projects">
           <Table
             dataSource={projects}

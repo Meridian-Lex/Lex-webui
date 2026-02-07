@@ -67,7 +67,39 @@ export class ProjectMapService {
 
     return match[1]
       .split(',')
-      .map(r => r.trim())
-      .filter(r => r.length > 0);
+      .map((r) => r.trim())
+      .filter((r) => r.length > 0);
+  }
+
+  async getProjectGraph(): Promise<{
+    nodes: Array<{ id: string; name: string; status: string; description?: string }>;
+    links: Array<{ source: string; target: string; type: string }>;
+  }> {
+    const projects = await this.getProjects();
+
+    const nodes = projects.map((project) => ({
+      id: project.name,
+      name: project.name,
+      status: project.status,
+      description: `Path: ${project.path}`,
+    }));
+
+    const links: Array<{ source: string; target: string; type: string }> = [];
+
+    // Create links based on relationships
+    projects.forEach((project) => {
+      project.relationships.forEach((related) => {
+        // Only create link if the related project exists
+        if (projects.some((p) => p.name === related)) {
+          links.push({
+            source: project.name,
+            target: related,
+            type: 'related',
+          });
+        }
+      });
+    });
+
+    return { nodes, links };
   }
 }

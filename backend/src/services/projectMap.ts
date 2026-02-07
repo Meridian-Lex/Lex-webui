@@ -10,7 +10,7 @@ export class ProjectMapService {
 
   async getProjects(): Promise<Project[]> {
     try {
-      const content = await this.fs.readFile('PROJECT-MAP.md');
+      const content = await this.fs.readFile('lex-internal/state/PROJECT-MAP.md');
       return this.parseProjectMap(content);
     } catch (error) {
       console.error('Failed to read PROJECT-MAP.md:', error);

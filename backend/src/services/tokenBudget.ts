@@ -36,7 +36,7 @@ export class TokenBudgetService {
     perSessionTarget: number;
   }> {
     try {
-      const content = await this.fs.readFile('LEX-CONFIG.yaml');
+      const content = await this.fs.readFile('lex-internal/config/LEX-CONFIG.yaml');
       const config = yaml.load(content) as LexConfig;
 
       const tokenBudget = config.token_budget || {};

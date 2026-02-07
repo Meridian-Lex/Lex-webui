@@ -17,7 +17,7 @@ class ConfigService {
   }
 
   async getLexConfig(): Promise<Record<string, unknown>> {
-    const configPath = path.join(MERIDIAN_HOME, 'LEX-CONFIG.yaml');
+    const configPath = path.join(MERIDIAN_HOME, 'lex-internal/config/LEX-CONFIG.yaml');
     const content = await this.readFile(configPath);
 
     if (!content) {
@@ -32,7 +32,7 @@ class ConfigService {
   }
 
   async getState(): Promise<string> {
-    const statePath = path.join(MERIDIAN_HOME, 'STATE.md');
+    const statePath = path.join(MERIDIAN_HOME, 'lex-internal/state/STATE.md');
     return await this.readFile(statePath);
   }
 

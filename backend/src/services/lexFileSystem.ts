@@ -63,4 +63,53 @@ export class LexFileSystem {
     await this.writeFile(backupPath, content);
     return backupPath;
   }
+
+  async readLogs(logFileName: string): Promise<Array<{ timestamp: string; level: 'info' | 'error' | 'warning'; message: string; context?: any }>> {
+    const logPath = path.join('logs', logFileName);
+
+    // Check if log file exists
+    if (!await this.fileExists(logPath)) {
+      return [];
+    }
+
+    try {
+      const content = await this.readFile(logPath);
+      const lines = content.split('\n').filter(line => line.trim());
+
+      const logs = lines.map(line => {
+        // Parse format: [YYYY-MM-DD HH:MM:SS] message
+        const match = line.match(/^\[([^\]]+)\]\s+(.+)$/);
+
+        if (!match) {
+          // Line doesn't match expected format, return as-is
+          return {
+            timestamp: new Date().toISOString(),
+            level: 'info' as const,
+            message: line,
+          };
+        }
+
+        const [, timestamp, message] = match;
+
+        // Determine log level based on keywords
+        let level: 'info' | 'error' | 'warning' = 'info';
+        if (message.includes('ERROR') || message.includes('error') || message.includes('✗') || message.includes('Failed')) {
+          level = 'error';
+        } else if (message.includes('WARNING') || message.includes('warning') || message.includes('⚠')) {
+          level = 'warning';
+        }
+
+        return {
+          timestamp: new Date(timestamp).toISOString(),
+          level,
+          message,
+        };
+      });
+
+      return logs;
+    } catch (error) {
+      console.error(`Failed to read log file ${logFileName}:`, error);
+      return [];
+    }
+  }
 }

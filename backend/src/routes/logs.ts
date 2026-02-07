@@ -12,21 +12,19 @@ router.get('/', requireAuth, async (req: Request, res: Response): Promise<void> 
     const lines = parseInt(req.query.lines as string) || 100;
     const level = req.query.level as string;
 
-    // TODO: Read actual Lex logs - for now, return stub data
-    const logs: LogEntry[] = [
-      {
-        timestamp: new Date().toISOString(),
-        level: 'info',
-        message: 'Lex system initialized',
-        context: { mode: 'IDLE' },
-      },
-      {
-        timestamp: new Date(Date.now() - 60000).toISOString(),
-        level: 'info',
-        message: 'Token budget updated',
-        context: { remaining: 50000 },
-      },
-    ];
+    // Read actual Lex logs
+    const logs: LogEntry[] = [];
+
+    // Read state check logs
+    const stateCheckLogs = await lexFs.readLogs('state-checks.log');
+    logs.push(...stateCheckLogs);
+
+    // Read session tracking logs
+    const sessionLogs = await lexFs.readLogs('session-tracking.log');
+    logs.push(...sessionLogs);
+
+    // Sort by timestamp descending (newest first)
+    logs.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
     let filtered = logs;
 

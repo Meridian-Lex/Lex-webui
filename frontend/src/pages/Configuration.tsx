@@ -201,6 +201,7 @@ export const Configuration: React.FC = () => {
                   borderRadius: 4,
                   maxHeight: '600px',
                   overflow: 'auto',
+                  color: '#000000',
                 }}
               >
                 <ReactMarkdown>{config.state}</ReactMarkdown>
@@ -239,6 +240,7 @@ export const Configuration: React.FC = () => {
                   borderRadius: 4,
                   maxHeight: '600px',
                   overflow: 'auto',
+                  color: '#000000',
                 }}
               >
                 <ReactMarkdown>{config.readme}</ReactMarkdown>

@@ -6,6 +6,7 @@ import { useAuth } from '../contexts/AuthContext';
 import api from '../services/api';
 import { LexStatus } from '../types';
 import { TokenBudgetChart } from '../components/TokenBudgetChart';
+import { ThemeToggle } from '../components/ThemeToggle';
 
 const { Header, Content } = Layout;
 const { Title, Text } = Typography;
@@ -58,6 +59,7 @@ export default function DashboardPage(): React.ReactElement {
           <Link to="/tasks" style={{ color: 'white', marginRight: 24 }}>Tasks</Link>
           <Link to="/logs" style={{ color: 'white', marginRight: 24 }}>Logs</Link>
           <Link to="/config" style={{ color: 'white', marginRight: 24 }}>Configuration</Link>
+          <ThemeToggle />
           <Text style={{ color: 'white', marginRight: 16 }}>{user?.username}</Text>
           <Button onClick={logout} size="small">Logout</Button>
         </div>

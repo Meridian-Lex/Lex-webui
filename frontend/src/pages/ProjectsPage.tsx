@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Layout, Card, Table, Typography, Button } from 'antd';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { ThemeToggle } from '../components/ThemeToggle';
 import api from '../services/api';
 import { Project } from '../types';
 
@@ -63,6 +64,7 @@ export default function ProjectsPage(): React.ReactElement {
           <Link to="/tasks" style={{ color: 'white', marginRight: 24 }}>Tasks</Link>
           <Link to="/logs" style={{ color: 'white', marginRight: 24 }}>Logs</Link>
           <Link to="/config" style={{ color: 'white', marginRight: 24 }}>Configuration</Link>
+          <ThemeToggle />
           <Text style={{ color: 'white', marginRight: 16 }}>{user?.username}</Text>
           <Button onClick={logout} size="small">Logout</Button>
         </div>

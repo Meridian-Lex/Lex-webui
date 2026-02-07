@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Tabs, Typography, Spin, Alert, Descriptions, Tag, Layout, Button } from 'antd';
+import { Card, Tabs, Typography, Spin, Alert, Descriptions, Tag, Layout, Button, theme } from 'antd';
 import { SettingOutlined, FileTextOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useTheme } from '../contexts/ThemeContext';
 import { configApi } from '../services/config.service';
+import { ThemeToggle } from '../components/ThemeToggle';
 import ReactMarkdown from 'react-markdown';
 
 const { Header, Content: AntContent } = Layout;
@@ -24,6 +26,8 @@ interface ConfigData {
 
 export const Configuration: React.FC = () => {
   const { user, logout } = useAuth();
+  const { theme: currentTheme } = useTheme();
+  const { token } = theme.useToken();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [config, setConfig] = useState<ConfigData | null>(null);
@@ -118,6 +122,7 @@ export const Configuration: React.FC = () => {
           <Link to="/logs" style={{ color: 'white', marginRight: 24 }}>
             Logs
           </Link>
+          <ThemeToggle />
           <Text style={{ color: 'white', marginRight: 16 }}>{user?.username}</Text>
           <Button onClick={logout} size="small">
             Logout
@@ -196,12 +201,12 @@ export const Configuration: React.FC = () => {
             {config.state ? (
               <div
                 style={{
-                  background: '#f5f5f5',
+                  background: currentTheme === 'dark' ? '#1f1f1f' : '#f5f5f5',
                   padding: 16,
                   borderRadius: 4,
                   maxHeight: '600px',
                   overflow: 'auto',
-                  color: '#000000',
+                  color: token.colorText,
                 }}
               >
                 <ReactMarkdown>{config.state}</ReactMarkdown>
@@ -235,12 +240,12 @@ export const Configuration: React.FC = () => {
             {config.readme ? (
               <div
                 style={{
-                  background: '#f5f5f5',
+                  background: currentTheme === 'dark' ? '#1f1f1f' : '#f5f5f5',
                   padding: 16,
                   borderRadius: 4,
                   maxHeight: '600px',
                   overflow: 'auto',
-                  color: '#000000',
+                  color: token.colorText,
                 }}
               >
                 <ReactMarkdown>{config.readme}</ReactMarkdown>

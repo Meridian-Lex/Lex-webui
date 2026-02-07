@@ -16,15 +16,29 @@ This log tracks queries, decisions, and items requiring Fleet Chief Lauren's inp
 
 ### Deployment Configuration
 
-*None yet - will log any deployment decisions requiring confirmation*
+**✅ Resolved:** Docker MERIDIAN_HOME path mapping
+- Issue: Container couldn't access LEX-CONFIG.yaml
+- Solution: Set MERIDIAN_HOME=/meridian-home in docker-compose.yml to match volume mount
+- Status: Deployed and working
 
 ### v1.1 Feature Priorities
 
-*Will log feature prioritization questions as development progresses*
+**Completed:**
+1. ✅ Configuration Viewer - Fully implemented and deployed
+
+**Remaining (prioritized):**
+2. Token budget visualization with charts
+3. Task board integration
+4. Project relationship graph
+
+**Question:** Which v1.1 feature should I prioritize next?
+- Token budget charts (good visual value, helps with monitoring)
+- Task board (more complex, requires task system integration)
+- Project graph (most complex, requires D3.js or similar)
 
 ### Issues Encountered
 
-*Will document any blockers or unexpected situations*
+*None currently blocking progress*
 
 ---
 

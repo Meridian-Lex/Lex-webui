@@ -13,6 +13,9 @@ export interface LexStatus {
     used: number;
     remaining: number;
     reserved: number;
+    weekUsage?: number;
+    monthUsage?: number;
+    perSessionTarget?: number;
   };
   lastUpdated: string;
 }

@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Layout, Card, Row, Col, Button, Typography, Progress, Tag } from 'antd';
+import { Layout, Card, Row, Col, Button, Typography, Tag } from 'antd';
 import { RocketOutlined, PauseOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import api from '../services/api';
 import { LexStatus } from '../types';
+import { TokenBudgetChart } from '../components/TokenBudgetChart';
 
 const { Header, Content } = Layout;
 const { Title, Text } = Typography;
@@ -62,16 +63,14 @@ export default function DashboardPage(): React.ReactElement {
       </Header>
       <Content style={{ padding: 24, minHeight: 'calc(100vh - 64px)' }}>
         <Row gutter={[16, 16]}>
-          <Col span={12}>
+          <Col span={24}>
             <Card title="Operational Status">
               {status ? (
                 <>
                   <div style={{ marginBottom: 16 }}>
                     <Text strong>Mode: </Text>
                     <Tag color={modeColors[status.mode]}>{status.mode}</Tag>
-                  </div>
-                  <div style={{ marginBottom: 16 }}>
-                    <Text strong>Current Project: </Text>
+                    <Text strong style={{ marginLeft: 24 }}>Current Project: </Text>
                     <Text>{status.currentProject || 'None'}</Text>
                   </div>
                   <div>
@@ -100,34 +99,20 @@ export default function DashboardPage(): React.ReactElement {
               )}
             </Card>
           </Col>
-          <Col span={12}>
-            <Card title="Token Budget">
-              {status ? (
-                <>
-                  <div style={{ marginBottom: 16 }}>
-                    <Progress
-                      percent={Math.round((status.tokenBudget.used / status.tokenBudget.dailyLimit) * 100)}
-                      status="active"
-                    />
-                  </div>
-                  <Row>
-                    <Col span={12}>
-                      <Text>Used: {status.tokenBudget.used.toLocaleString()}</Text>
-                    </Col>
-                    <Col span={12}>
-                      <Text>Remaining: {status.tokenBudget.remaining.toLocaleString()}</Text>
-                    </Col>
-                  </Row>
-                  <div style={{ marginTop: 8 }}>
-                    <Text type="secondary">Daily Limit: {status.tokenBudget.dailyLimit.toLocaleString()}</Text>
-                  </div>
-                </>
-              ) : (
-                <Text>Loading...</Text>
-              )}
-            </Card>
-          </Col>
         </Row>
+
+        <Title level={4} style={{ marginTop: 24, marginBottom: 16 }}>
+          Token Budget Monitoring
+        </Title>
+        {status && status.tokenBudget && (
+          <TokenBudgetChart
+            dailyLimit={status.tokenBudget.dailyLimit}
+            todayUsage={status.tokenBudget.used}
+            weekUsage={status.tokenBudget.weekUsage || status.tokenBudget.used}
+            monthUsage={status.tokenBudget.monthUsage || status.tokenBudget.used}
+            reservedForCommander={status.tokenBudget.reserved}
+          />
+        )}
       </Content>
     </Layout>
   );

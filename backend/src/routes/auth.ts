@@ -22,6 +22,18 @@ const loginSchema = Joi.object({
   password: Joi.string().required(),
 });
 
+// GET /api/auth/setup-needed - Check if first-run setup is needed
+router.get('/setup-needed', async (req: Request, res: Response): Promise<void> => {
+  try {
+    const userRepo = AppDataSource.getRepository(User);
+    const userCount = await userRepo.count();
+    res.json({ setupNeeded: userCount === 0 });
+  } catch (err) {
+    console.error('Setup check error:', err);
+    res.status(500).json({ error: 'Failed to check setup status' });
+  }
+});
+
 // POST /api/auth/setup - First-run admin creation
 router.post('/setup', authRateLimit, auditLog('auth:setup'), async (req: Request, res: Response): Promise<void> => {
   try {

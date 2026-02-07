@@ -10,11 +10,11 @@ export class StateManager {
 
   async getStatus(): Promise<LexStatus> {
     try {
-      const content = await this.fs.readFile('STATE.md');
+      const content = await this.fs.readFile('lex-internal/state/STATE.md');
 
-      // Parse STATE.md (simple markdown parsing)
-      const mode = this.extractField(content, 'Current Mode') as LexStatus['mode'] || 'IDLE';
-      const currentProject = this.extractField(content, 'Current Project');
+      // Parse lex-internal/state/STATE.md (simple markdown parsing)
+      const mode = (this.extractField(content, 'Mode') || this.extractField(content, 'Current Mode')) as LexStatus['mode'] || 'IDLE';
+      const currentProject = this.extractField(content, 'Project Context') || this.extractField(content, 'Current Project');
 
       // Get token budget from LEX-CONFIG.yaml (stub for now)
       const tokenBudget = {
@@ -31,7 +31,7 @@ export class StateManager {
         lastUpdated: new Date(),
       };
     } catch (error) {
-      // If STATE.md doesn't exist, return defaults
+      // If lex-internal/state/STATE.md doesn't exist, return defaults
       return {
         mode: 'IDLE',
         currentProject: null,
@@ -47,15 +47,24 @@ export class StateManager {
   }
 
   async setMode(mode: LexStatus['mode']): Promise<void> {
-    const content = await this.fs.readFile('STATE.md');
-    const updated = this.updateField(content, 'Current Mode', mode);
-    await this.fs.writeFile('STATE.md', updated);
+    const content = await this.fs.readFile('lex-internal/state/STATE.md');
+    // Try both 'Mode' and 'Current Mode' field names
+    let updated = this.updateField(content, 'Mode', mode);
+    if (updated === content) {
+      updated = this.updateField(content, 'Current Mode', mode);
+    }
+    await this.fs.writeFile('lex-internal/state/STATE.md', updated);
   }
 
   private extractField(content: string, field: string): string | null {
     const regex = new RegExp(`\\*\\*${field}\\*\\*:?\\s*(.+)`, 'i');
     const match = content.match(regex);
-    return match ? match[1].trim() : null;
+    if (!match) return null;
+
+    // Remove markdown formatting (backticks, quotes)
+    let value = match[1].trim();
+    value = value.replace(/^[`"']|[`"']$/g, '');
+    return value;
   }
 
   private updateField(content: string, field: string, value: string): string {

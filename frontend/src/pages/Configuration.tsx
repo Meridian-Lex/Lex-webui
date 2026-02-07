@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Tabs, Typography, Spin, Alert, Descriptions, Tag, Layout, Button } from 'antd';
+import { Card, Tabs, Typography, Spin, Alert, Descriptions, Tag, Layout, theme } from 'antd';
 import { SettingOutlined, FileTextOutlined, InfoCircleOutlined } from '@ant-design/icons';
-import { Link } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import { useTheme } from '../contexts/ThemeContext';
 import { configApi } from '../services/config.service';
+import { AppHeader } from '../components/AppHeader';
 import ReactMarkdown from 'react-markdown';
 
-const { Header, Content: AntContent } = Layout;
+const { Content: AntContent } = Layout;
 
 const { Title, Paragraph, Text } = Typography;
 const { TabPane } = Tabs;
@@ -23,7 +23,8 @@ interface ConfigData {
 }
 
 export const Configuration: React.FC = () => {
-  const { user, logout } = useAuth();
+  const { theme: currentTheme } = useTheme();
+  const { token } = theme.useToken();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [config, setConfig] = useState<ConfigData | null>(null);
@@ -93,38 +94,7 @@ export const Configuration: React.FC = () => {
 
   return (
     <Layout>
-      <Header
-        style={{
-          background: '#001529',
-          padding: '0 24px',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-        }}
-      >
-        <Title level={3} style={{ color: 'white', margin: 0 }}>
-          Lex Fleet Command
-        </Title>
-        <div>
-          <Link to="/" style={{ color: 'white', marginRight: 24 }}>
-            Dashboard
-          </Link>
-          <Link to="/projects" style={{ color: 'white', marginRight: 24 }}>
-            Projects
-          </Link>
-          <Link to="/tasks" style={{ color: 'white', marginRight: 24 }}>
-            Tasks
-          </Link>
-          <Link to="/logs" style={{ color: 'white', marginRight: 24 }}>
-            Logs
-          </Link>
-          <Text style={{ color: 'white', marginRight: 16 }}>{user?.username}</Text>
-          <Button onClick={logout} size="small">
-            Logout
-          </Button>
-        </div>
-      </Header>
-
+      <AppHeader />
       <AntContent style={{ padding: 24, minHeight: 'calc(100vh - 64px)' }}>
         <Title level={2}>
           <SettingOutlined /> Configuration
@@ -196,11 +166,12 @@ export const Configuration: React.FC = () => {
             {config.state ? (
               <div
                 style={{
-                  background: '#f5f5f5',
+                  background: currentTheme === 'dark' ? '#1f1f1f' : '#f5f5f5',
                   padding: 16,
                   borderRadius: 4,
                   maxHeight: '600px',
                   overflow: 'auto',
+                  color: token.colorText,
                 }}
               >
                 <ReactMarkdown>{config.state}</ReactMarkdown>
@@ -234,11 +205,12 @@ export const Configuration: React.FC = () => {
             {config.readme ? (
               <div
                 style={{
-                  background: '#f5f5f5',
+                  background: currentTheme === 'dark' ? '#1f1f1f' : '#f5f5f5',
                   padding: 16,
                   borderRadius: 4,
                   maxHeight: '600px',
                   overflow: 'auto',
+                  color: token.colorText,
                 }}
               >
                 <ReactMarkdown>{config.readme}</ReactMarkdown>

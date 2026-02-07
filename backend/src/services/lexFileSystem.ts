@@ -63,4 +63,69 @@ export class LexFileSystem {
     await this.writeFile(backupPath, content);
     return backupPath;
   }
+
+  async readLogs(logFileName: string): Promise<Array<{ timestamp: string; level: 'info' | 'error' | 'warning'; message: string; context?: any }>> {
+    const logPath = path.join('logs', logFileName);
+
+    // Check if log file exists
+    if (!await this.fileExists(logPath)) {
+      return [];
+    }
+
+    try {
+      const content = await this.readFile(logPath);
+      const lines = content.split('\n');
+
+      const logs: Array<{ timestamp: string; level: 'info' | 'error' | 'warning'; message: string }> = [];
+      let currentLog: { timestamp: string; level: 'info' | 'error' | 'warning'; message: string } | null = null;
+
+      for (const line of lines) {
+        const trimmed = line.trim();
+
+        // Skip completely empty lines
+        if (!trimmed) {
+          continue;
+        }
+
+        // Parse format: [YYYY-MM-DD HH:MM:SS] message
+        const match = trimmed.match(/^\[([^\]]+)\]\s+(.+)$/);
+
+        if (match) {
+          // Save previous log entry if exists
+          if (currentLog) {
+            logs.push(currentLog);
+          }
+
+          const [, timestamp, message] = match;
+
+          // Determine log level based on keywords
+          let level: 'info' | 'error' | 'warning' = 'info';
+          if (message.includes('ERROR') || message.includes('error') || message.includes('✗') || message.includes('Failed')) {
+            level = 'error';
+          } else if (message.includes('WARNING') || message.includes('warning') || message.includes('⚠')) {
+            level = 'warning';
+          }
+
+          currentLog = {
+            timestamp: new Date(timestamp).toISOString(),
+            level,
+            message,
+          };
+        } else if (currentLog) {
+          // Line without timestamp - append to current log message
+          currentLog.message += ' ' + trimmed;
+        }
+      }
+
+      // Don't forget the last log entry
+      if (currentLog) {
+        logs.push(currentLog);
+      }
+
+      return logs;
+    } catch (error) {
+      console.error(`Failed to read log file ${logFileName}:`, error);
+      return [];
+    }
+  }
 }

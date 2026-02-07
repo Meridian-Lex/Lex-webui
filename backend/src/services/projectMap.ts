@@ -10,7 +10,7 @@ export class ProjectMapService {
 
   async getProjects(): Promise<Project[]> {
     try {
-      const content = await this.fs.readFile('PROJECT-MAP.md');
+      const content = await this.fs.readFile('lex-internal/state/PROJECT-MAP.md');
       return this.parseProjectMap(content);
     } catch (error) {
       console.error('Failed to read PROJECT-MAP.md:', error);
@@ -21,31 +21,43 @@ export class ProjectMapService {
   private parseProjectMap(content: string): Project[] {
     const projects: Project[] = [];
 
-    // Simple parser - looks for project entries
-    // Format: ## ProjectName
-    const projectRegex = /^##\s+(.+)$/gm;
-    let match;
+    // Parse table format: | Project Name | Status | Path | ...
+    const lines = content.split('\n');
+    let inTable = false;
 
-    while ((match = projectRegex.exec(content)) !== null) {
-      const name = match[1].trim();
-      const startIndex = match.index;
-      const nextMatch = projectRegex.exec(content);
-      const endIndex = nextMatch ? nextMatch.index : content.length;
+    for (const line of lines) {
+      const trimmed = line.trim();
 
-      // Reset regex for next iteration
-      if (nextMatch) {
-        projectRegex.lastIndex = nextMatch.index;
+      // Skip table header and separator rows
+      if (trimmed.startsWith('| Project Name') || trimmed.startsWith('|---')) {
+        inTable = true;
+        continue;
       }
 
-      const section = content.substring(startIndex, endIndex);
+      // Parse table rows
+      if (inTable && trimmed.startsWith('|') && !trimmed.startsWith('|---')) {
+        const cells = trimmed.split('|').map((cell) => cell.trim()).filter((cell) => cell.length > 0);
 
-      projects.push({
-        name,
-        path: this.extractPath(section) || `/projects/${name}`,
-        status: this.extractStatus(section) || 'active',
-        lastActivity: null, // TODO: Parse from git
-        relationships: this.extractRelationships(section),
-      });
+        if (cells.length >= 3) {
+          const [name, status, path, , , notes] = cells;
+
+          // Skip if this looks like archived/completed projects
+          if (status && status.toUpperCase() !== 'ARCHIVED') {
+            projects.push({
+              name,
+              path: path || `~/meridian-home/projects/${name}`,
+              status: status.toLowerCase(),
+              lastActivity: null,
+              relationships: [],
+            });
+          }
+        }
+      }
+
+      // Stop when table ends
+      if (inTable && trimmed && !trimmed.startsWith('|')) {
+        break;
+      }
     }
 
     return projects;

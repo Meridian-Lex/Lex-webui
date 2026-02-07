@@ -25,16 +25,28 @@ This log tracks queries, decisions, and items requiring Fleet Chief Lauren's inp
 
 **Completed:**
 1. ✅ Configuration Viewer - Fully implemented and deployed
+2. ✅ Token Budget Visualization - Comprehensive charts and monitoring
 
-**Remaining (prioritized):**
-2. Token budget visualization with charts
-3. Task board integration
-4. Project relationship graph
+**Remaining (in order of suggested priority):**
+3. Task Board integration (moderate complexity)
+4. Project Relationship Graph (high complexity)
 
-**Question:** Which v1.1 feature should I prioritize next?
-- Token budget charts (good visual value, helps with monitoring)
-- Task board (more complex, requires task system integration)
-- Project graph (most complex, requires D3.js or similar)
+**Questions for Admiral:**
+
+1. **v1.1 Completion Priority:**
+   - Should I continue with Task Board integration?
+   - Or skip to v1.2 features (more user-facing functionality)?
+   - Or pause development and await further direction?
+
+2. **Task Board Implementation Approach:**
+   - Integrate with existing Claude task system?
+   - Or build standalone task management?
+   - What level of CRUD operations needed?
+
+3. **Deployment Accessibility:**
+   - Current deployment: localhost:3000 (Docker on local machine)
+   - Should this be exposed for remote access?
+   - SSL/TLS configuration needed?
 
 ### Issues Encountered
 

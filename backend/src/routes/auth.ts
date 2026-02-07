@@ -5,6 +5,7 @@ import { AppDataSource } from '../config/database';
 import { User } from '../models/User';
 import { requireAuth } from '../middleware/auth';
 import { auditLog } from '../middleware/audit';
+import { authRateLimit, apiRateLimit } from '../middleware/rateLimit';
 
 const router = Router();
 const BCRYPT_ROUNDS = 12;
@@ -22,7 +23,7 @@ const loginSchema = Joi.object({
 });
 
 // POST /api/auth/setup - First-run admin creation
-router.post('/setup', auditLog('auth:setup'), async (req: Request, res: Response): Promise<void> => {
+router.post('/setup', authRateLimit, auditLog('auth:setup'), async (req: Request, res: Response): Promise<void> => {
   try {
     const { error, value } = setupSchema.validate(req.body);
     if (error) {
@@ -67,7 +68,7 @@ router.post('/setup', auditLog('auth:setup'), async (req: Request, res: Response
 });
 
 // POST /api/auth/login
-router.post('/login', auditLog('auth:login'), async (req: Request, res: Response): Promise<void> => {
+router.post('/login', authRateLimit, auditLog('auth:login'), async (req: Request, res: Response): Promise<void> => {
   try {
     const { error, value } = loginSchema.validate(req.body);
     if (error) {
@@ -114,7 +115,7 @@ router.post('/login', auditLog('auth:login'), async (req: Request, res: Response
 });
 
 // POST /api/auth/logout
-router.post('/logout', requireAuth, auditLog('auth:logout'), async (req: Request, res: Response): Promise<void> => {
+router.post('/logout', apiRateLimit, requireAuth, auditLog('auth:logout'), async (req: Request, res: Response): Promise<void> => {
   req.session.destroy((err) => {
     if (err) {
       console.error('Logout error:', err);
@@ -126,7 +127,7 @@ router.post('/logout', requireAuth, auditLog('auth:logout'), async (req: Request
 });
 
 // GET /api/auth/me
-router.get('/me', requireAuth, async (req: Request, res: Response): Promise<void> => {
+router.get('/me', apiRateLimit, requireAuth, async (req: Request, res: Response): Promise<void> => {
   try {
     const userRepo = AppDataSource.getRepository(User);
     const user = await userRepo.findOne({ where: { id: req.session.userId } });

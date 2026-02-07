@@ -20,6 +20,9 @@ import tasksRoutes from './routes/tasks';
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+// Trust proxy - required for rate limiting behind NGINX
+app.set('trust proxy', true);
+
 // Middleware
 app.use(helmet());
 app.use(cors({
@@ -46,7 +49,8 @@ const sessionMiddleware = session({
 app.use(sessionMiddleware);
 
 // Routes
-app.use('/api/auth', authRateLimit, authRoutes);
+// Note: Rate limiting applied at route level in auth.ts for granular control
+app.use('/api/auth', authRoutes);
 app.use('/api/status', apiRateLimit, statusRoutes);
 app.use('/api/projects', apiRateLimit, projectsRoutes);
 app.use('/api/logs', apiRateLimit, logsRoutes);

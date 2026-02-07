@@ -4,7 +4,7 @@ import { Spin } from 'antd';
 import LoginForm from '../components/auth/LoginForm';
 import FirstRunSetup from '../components/auth/FirstRunSetup';
 import { authService } from '../services/auth.service';
-import { useAuth } from '../hooks/useAuth';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function LoginPage(): React.ReactElement {
   const [isFirstRun, setIsFirstRun] = useState<boolean | null>(null);

@@ -8,7 +8,7 @@ import LogsPage from './pages/LogsPage';
 import { Configuration } from './pages/Configuration';
 import { TaskBoard } from './pages/TaskBoard';
 import { ProjectGraph } from './pages/ProjectGraph';
-import { useAuth } from './hooks/useAuth';
+import { useAuth } from './contexts/AuthContext';
 
 const { Content } = Layout;
 

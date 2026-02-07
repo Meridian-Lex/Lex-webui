@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { ConfigProvider, theme } from 'antd';
 import App from './App';
+import { AuthProvider } from './contexts/AuthContext';
 import './index.css';
 
 const rootElement = document.getElementById('root');
@@ -12,15 +13,17 @@ if (!rootElement) {
 
 ReactDOM.createRoot(rootElement).render(
   <React.StrictMode>
-    <ConfigProvider
-      theme={{
-        algorithm: theme.darkAlgorithm,
-        token: {
-          colorPrimary: '#1890ff',
-        },
-      }}
-    >
-      <App />
-    </ConfigProvider>
+    <AuthProvider>
+      <ConfigProvider
+        theme={{
+          algorithm: theme.darkAlgorithm,
+          token: {
+            colorPrimary: '#1890ff',
+          },
+        }}
+      >
+        <App />
+      </ConfigProvider>
+    </AuthProvider>
   </React.StrictMode>
 );

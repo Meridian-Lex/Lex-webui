@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Layout, Card, Typography, Button, Tag, Spin, Alert } from 'antd';
 import { Link } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
+import { useAuth } from '../contexts/AuthContext';
 import ForceGraph2D from 'react-force-graph-2d';
 import api from '../services/api';
 

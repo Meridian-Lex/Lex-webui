@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Layout, Card, Row, Col, Button, Typography, Tag } from 'antd';
 import { RocketOutlined, PauseOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
+import { useAuth } from '../contexts/AuthContext';
 import api from '../services/api';
 import { LexStatus } from '../types';
 import { TokenBudgetChart } from '../components/TokenBudgetChart';

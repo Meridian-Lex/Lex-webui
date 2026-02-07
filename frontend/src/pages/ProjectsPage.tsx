@@ -61,6 +61,7 @@ export default function ProjectsPage(): React.ReactElement {
         <div>
           <Link to="/" style={{ color: 'white', marginRight: 24 }}>Dashboard</Link>
           <Link to="/logs" style={{ color: 'white', marginRight: 24 }}>Logs</Link>
+          <Link to="/config" style={{ color: 'white', marginRight: 24 }}>Configuration</Link>
           <Text style={{ color: 'white', marginRight: 16 }}>{user?.username}</Text>
           <Button onClick={logout} size="small">Logout</Button>
         </div>

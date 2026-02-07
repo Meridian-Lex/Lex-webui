@@ -23,7 +23,7 @@ services:
       - DATABASE_URL=${DATABASE_URL}
       - REDIS_URL=${REDIS_URL}
       - SESSION_SECRET=${SESSION_SECRET}
-      - MERIDIAN_HOME=${MERIDIAN_HOME}
+      - MERIDIAN_HOME=/meridian-home
       - PORT=3001
     volumes:
       - ${MERIDIAN_HOME}:/meridian-home:ro

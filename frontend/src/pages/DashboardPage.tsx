@@ -55,6 +55,7 @@ export default function DashboardPage(): React.ReactElement {
         <div>
           <Link to="/projects" style={{ color: 'white', marginRight: 24 }}>Projects</Link>
           <Link to="/logs" style={{ color: 'white', marginRight: 24 }}>Logs</Link>
+          <Link to="/config" style={{ color: 'white', marginRight: 24 }}>Configuration</Link>
           <Text style={{ color: 'white', marginRight: 16 }}>{user?.username}</Text>
           <Button onClick={logout} size="small">Logout</Button>
         </div>

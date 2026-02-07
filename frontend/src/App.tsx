@@ -5,6 +5,7 @@ import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
 import ProjectsPage from './pages/ProjectsPage';
 import LogsPage from './pages/LogsPage';
+import { Configuration } from './pages/Configuration';
 import { useAuth } from './hooks/useAuth';
 
 const { Content } = Layout;
@@ -25,6 +26,7 @@ function App(): React.ReactElement {
             <Route path="/" element={user ? <DashboardPage /> : <Navigate to="/login" />} />
             <Route path="/projects" element={user ? <ProjectsPage /> : <Navigate to="/login" />} />
             <Route path="/logs" element={user ? <LogsPage /> : <Navigate to="/login" />} />
+            <Route path="/config" element={user ? <Configuration /> : <Navigate to="/login" />} />
           </Routes>
         </Content>
       </Layout>

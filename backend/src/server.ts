@@ -14,6 +14,7 @@ import authRoutes from './routes/auth';
 import statusRoutes from './routes/status';
 import projectsRoutes from './routes/projects';
 import logsRoutes from './routes/logs';
+import configRoutes from './routes/config';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -48,6 +49,7 @@ app.use('/api/auth', authRateLimit, authRoutes);
 app.use('/api/status', apiRateLimit, statusRoutes);
 app.use('/api/projects', apiRateLimit, projectsRoutes);
 app.use('/api/logs', apiRateLimit, logsRoutes);
+app.use('/api/config', apiRateLimit, configRoutes);
 
 // Health check (no rate limit)
 app.get('/health', (req, res) => {

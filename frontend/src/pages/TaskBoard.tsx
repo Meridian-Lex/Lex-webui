@@ -22,7 +22,7 @@ import {
   DeleteOutlined,
 } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
+import { useAuth } from '../contexts/AuthContext';
 import { taskApi, Task, TaskStats } from '../services/task.service';
 
 const { Header, Content } = Layout;

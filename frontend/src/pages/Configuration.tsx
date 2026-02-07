@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Card, Tabs, Typography, Spin, Alert, Descriptions, Tag, Layout, Button } from 'antd';
 import { SettingOutlined, FileTextOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
+import { useAuth } from '../contexts/AuthContext';
 import { configApi } from '../services/config.service';
 import ReactMarkdown from 'react-markdown';
 

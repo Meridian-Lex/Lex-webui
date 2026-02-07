@@ -47,6 +47,7 @@ export default function LogsPage(): React.ReactElement {
         <div>
           <Link to="/" style={{ color: 'white', marginRight: 24 }}>Dashboard</Link>
           <Link to="/projects" style={{ color: 'white', marginRight: 24 }}>Projects</Link>
+          <Link to="/tasks" style={{ color: 'white', marginRight: 24 }}>Tasks</Link>
           <Link to="/config" style={{ color: 'white', marginRight: 24 }}>Configuration</Link>
           <Text style={{ color: 'white', marginRight: 16 }}>{user?.username}</Text>
           <Button onClick={logout} size="small">Logout</Button>

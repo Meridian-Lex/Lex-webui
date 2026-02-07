@@ -60,6 +60,7 @@ export default function ProjectsPage(): React.ReactElement {
         <Title level={3} style={{ color: 'white', margin: 0 }}>Lex Fleet Command</Title>
         <div>
           <Link to="/" style={{ color: 'white', marginRight: 24 }}>Dashboard</Link>
+          <Link to="/tasks" style={{ color: 'white', marginRight: 24 }}>Tasks</Link>
           <Link to="/logs" style={{ color: 'white', marginRight: 24 }}>Logs</Link>
           <Link to="/config" style={{ color: 'white', marginRight: 24 }}>Configuration</Link>
           <Text style={{ color: 'white', marginRight: 16 }}>{user?.username}</Text>

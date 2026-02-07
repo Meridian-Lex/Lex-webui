@@ -20,8 +20,9 @@ import tasksRoutes from './routes/tasks';
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// Trust proxy - required for rate limiting behind NGINX
-app.set('trust proxy', true);
+// Trust proxy - trust first hop (NGINX) for rate limiting
+// Using numeric value 1 to trust only the immediate proxy (not blindly trust all)
+app.set('trust proxy', 1);
 
 // Middleware
 app.use(helmet());

@@ -10,25 +10,39 @@ import {
   Statistic,
   Space,
   Alert,
+  Input,
+  Select,
+  Skeleton,
+  Empty,
+  Divider,
 } from 'antd';
 import {
   CheckCircleOutlined,
   ClockCircleOutlined,
   PlayCircleOutlined,
   InfoCircleOutlined,
+  SearchOutlined,
+  FilterOutlined,
+  LinkOutlined,
+  ExclamationCircleOutlined,
 } from '@ant-design/icons';
 import { AppHeader } from '../components/AppHeader';
 import { taskApi, Task, TaskStats } from '../services/task.service';
 
 const { Content } = Layout;
 const { Title, Text, Paragraph } = Typography;
+const { Option } = Select;
 
 export const TaskBoard: React.FC = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [stats, setStats] = useState<TaskStats | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [detailModalVisible, setDetailModalVisible] = useState(false);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [priorityFilter, setPriorityFilter] = useState<string>('all');
+  const [assignedFilter, setAssignedFilter] = useState<string>('all');
 
   useEffect(() => {
     loadTasks();
@@ -45,8 +59,10 @@ export const TaskBoard: React.FC = () => {
     try {
       const data = await taskApi.getAllTasks();
       setTasks(data.tasks);
-    } catch (error) {
-      console.error('Failed to load tasks:', error);
+      setError(null);
+    } catch (err) {
+      console.error('Failed to load tasks:', err);
+      setError('Failed to load tasks. Check connection to backend.');
     } finally {
       setLoading(false);
     }
@@ -66,9 +82,37 @@ export const TaskBoard: React.FC = () => {
     setDetailModalVisible(true);
   };
 
-  const getTasksByStatus = (status: string) => {
-    return tasks.filter((task) => task.status === status);
+  const filterTasks = (taskList: Task[]) => {
+    return taskList.filter((task) => {
+      // Search filter
+      const matchesSearch =
+        searchQuery === '' ||
+        task.subject.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        task.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        task.id.toLowerCase().includes(searchQuery.toLowerCase());
+
+      // Priority filter
+      const matchesPriority =
+        priorityFilter === 'all' ||
+        (task.priority && task.priority.toUpperCase().includes(priorityFilter.toUpperCase()));
+
+      // Assigned filter
+      const matchesAssigned =
+        assignedFilter === 'all' ||
+        (task.assigned && task.assigned.toLowerCase().includes(assignedFilter.toLowerCase()));
+
+      return matchesSearch && matchesPriority && matchesAssigned;
+    });
   };
+
+  const getTasksByStatus = (status: string) => {
+    const statusFiltered = tasks.filter((task) => task.status === status);
+    return filterTasks(statusFiltered);
+  };
+
+  // Get unique values for filters
+  const uniquePriorities = Array.from(new Set(tasks.map((t) => t.priority).filter(Boolean)));
+  const uniqueAssigned = Array.from(new Set(tasks.map((t) => t.assigned).filter(Boolean)));
 
   const renderTaskCard = (task: Task) => {
     const statusColors: Record<string, string> = {
@@ -85,16 +129,28 @@ export const TaskBoard: React.FC = () => {
       LOW: 'green',
     };
 
+    const isBlocked = task.metadata && 'blocked' in task.metadata && Boolean(task.metadata.blocked);
+
     return (
       <Card
         key={task.id}
         size="small"
-        style={{ marginBottom: 8, cursor: 'pointer' }}
+        style={{
+          marginBottom: 8,
+          cursor: 'pointer',
+          borderLeft: isBlocked ? '4px solid #faad14' : undefined,
+        }}
         onClick={() => showTaskDetails(task)}
         hoverable
       >
         <div style={{ marginBottom: 8 }}>
-          <Text strong>Task {task.id}: {task.subject}</Text>
+          <Space>
+            <Text strong>#{task.id}</Text>
+            {isBlocked && <ExclamationCircleOutlined style={{ color: '#faad14' }} />}
+          </Space>
+          <div style={{ marginTop: 4 }}>
+            <Text>{task.subject}</Text>
+          </div>
         </div>
         <Paragraph
           ellipsis={{ rows: 2 }}
@@ -103,7 +159,7 @@ export const TaskBoard: React.FC = () => {
         >
           {task.description}
         </Paragraph>
-        <Space size="small" wrap>
+        <Space size="small" wrap style={{ marginBottom: 4 }}>
           <Tag color={statusColors[task.status]}>{task.status.replace('_', ' ').toUpperCase()}</Tag>
           {task.priority && (
             <Tag color={priorityColors[task.priority.toUpperCase().split(' ')[0]]}>
@@ -113,7 +169,13 @@ export const TaskBoard: React.FC = () => {
           {task.complexity && (
             <Tag>{task.complexity.split(' ')[0]}</Tag>
           )}
+          {task.assigned && <Tag icon={<LinkOutlined />}>{task.assigned}</Tag>}
         </Space>
+        {task.updatedAt && (
+          <Text type="secondary" style={{ fontSize: 11 }}>
+            Updated: {new Date(task.updatedAt).toLocaleDateString()}
+          </Text>
+        )}
       </Card>
     );
   };
@@ -132,6 +194,64 @@ export const TaskBoard: React.FC = () => {
             style={{ marginTop: 16 }}
           />
         </div>
+
+        {error && (
+          <Alert
+            message="Error Loading Tasks"
+            description={error}
+            type="error"
+            closable
+            onClose={() => setError(null)}
+            style={{ marginBottom: 16 }}
+          />
+        )}
+
+        {/* Search and Filters */}
+        <Card style={{ marginBottom: 16 }}>
+          <Row gutter={16}>
+            <Col xs={24} sm={12} md={10}>
+              <Input
+                placeholder="Search tasks..."
+                prefix={<SearchOutlined />}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                allowClear
+              />
+            </Col>
+            <Col xs={12} sm={6} md={7}>
+              <Select
+                style={{ width: '100%' }}
+                placeholder="Filter by priority"
+                value={priorityFilter}
+                onChange={setPriorityFilter}
+                suffixIcon={<FilterOutlined />}
+              >
+                <Option value="all">All Priorities</Option>
+                {uniquePriorities.map((priority) => (
+                  <Option key={priority} value={priority || ''}>
+                    {priority}
+                  </Option>
+                ))}
+              </Select>
+            </Col>
+            <Col xs={12} sm={6} md={7}>
+              <Select
+                style={{ width: '100%' }}
+                placeholder="Filter by assigned"
+                value={assignedFilter}
+                onChange={setAssignedFilter}
+                suffixIcon={<FilterOutlined />}
+              >
+                <Option value="all">All Assigned</Option>
+                {uniqueAssigned.map((assigned) => (
+                  <Option key={assigned} value={assigned || ''}>
+                    {assigned}
+                  </Option>
+                ))}
+              </Select>
+            </Col>
+          </Row>
+        </Card>
 
         {stats && (
           <Row gutter={16} style={{ marginBottom: 24 }}>
@@ -188,9 +308,9 @@ export const TaskBoard: React.FC = () => {
               bodyStyle={{ minHeight: 400, maxHeight: 600, overflow: 'auto' }}
             >
               {loading ? (
-                <Text type="secondary">Loading...</Text>
+                <Skeleton active paragraph={{ rows: 4 }} />
               ) : getTasksByStatus('pending').length === 0 ? (
-                <Text type="secondary">No pending tasks</Text>
+                <Empty description="No pending tasks" image={Empty.PRESENTED_IMAGE_SIMPLE} />
               ) : (
                 getTasksByStatus('pending').map(renderTaskCard)
               )}
@@ -208,9 +328,9 @@ export const TaskBoard: React.FC = () => {
               bodyStyle={{ minHeight: 400, maxHeight: 600, overflow: 'auto' }}
             >
               {loading ? (
-                <Text type="secondary">Loading...</Text>
+                <Skeleton active paragraph={{ rows: 4 }} />
               ) : getTasksByStatus('in_progress').length === 0 ? (
-                <Text type="secondary">No tasks in progress</Text>
+                <Empty description="No tasks in progress" image={Empty.PRESENTED_IMAGE_SIMPLE} />
               ) : (
                 getTasksByStatus('in_progress').map(renderTaskCard)
               )}
@@ -228,9 +348,9 @@ export const TaskBoard: React.FC = () => {
               bodyStyle={{ minHeight: 400, maxHeight: 600, overflow: 'auto' }}
             >
               {loading ? (
-                <Text type="secondary">Loading...</Text>
+                <Skeleton active paragraph={{ rows: 4 }} />
               ) : getTasksByStatus('completed').length === 0 ? (
-                <Text type="secondary">No completed tasks</Text>
+                <Empty description="No completed tasks" image={Empty.PRESENTED_IMAGE_SIMPLE} />
               ) : (
                 getTasksByStatus('completed').map(renderTaskCard)
               )}
@@ -241,60 +361,122 @@ export const TaskBoard: React.FC = () => {
         {/* Task Details Modal */}
         {selectedTask && (
           <Modal
-            title={`Task ${selectedTask.id} Details`}
+            title={
+              <Space>
+                <Text strong>Task #{selectedTask.id}</Text>
+                <Tag color={selectedTask.status === 'completed' ? 'success' : selectedTask.status === 'in_progress' ? 'processing' : 'default'}>
+                  {selectedTask.status.replace('_', ' ').toUpperCase()}
+                </Tag>
+              </Space>
+            }
             open={detailModalVisible}
             onCancel={() => {
               setDetailModalVisible(false);
               setSelectedTask(null);
             }}
             footer={null}
-            width={700}
+            width={800}
           >
             <div style={{ marginBottom: 16 }}>
               <Text strong style={{ fontSize: 18 }}>{selectedTask.subject}</Text>
-              <div style={{ marginTop: 8 }}>
-                <Space wrap>
-                  <Tag color={selectedTask.status === 'completed' ? 'success' : selectedTask.status === 'in_progress' ? 'processing' : 'default'}>
-                    {selectedTask.status.replace('_', ' ').toUpperCase()}
-                  </Tag>
-                  {selectedTask.priority && (
-                    <>
-                      <Text type="secondary">Priority:</Text>
-                      <Tag color={selectedTask.priority.includes('CRITICAL') ? 'red' : selectedTask.priority.includes('HIGH') ? 'orange' : 'default'}>
-                        {selectedTask.priority}
-                      </Tag>
-                    </>
-                  )}
-                </Space>
-              </div>
             </div>
 
-            <div style={{ marginBottom: 16 }}>
-              <Text strong>Description:</Text>
-              <Paragraph style={{ marginTop: 8, whiteSpace: 'pre-wrap' }}>{selectedTask.description}</Paragraph>
-            </div>
-
-            {selectedTask.complexity && (
-              <div style={{ marginBottom: 16 }}>
-                <Text strong>Complexity:</Text>
-                <Paragraph style={{ marginTop: 8 }}>{selectedTask.complexity}</Paragraph>
-              </div>
-            )}
-
-            {selectedTask.assigned && (
-              <div style={{ marginBottom: 16 }}>
-                <Text strong>Assigned:</Text>
-                <Paragraph style={{ marginTop: 8 }}>{selectedTask.assigned}</Paragraph>
-              </div>
-            )}
+            <Divider style={{ margin: '12px 0' }} />
 
             {selectedTask.metadata && 'blocked' in selectedTask.metadata && Boolean(selectedTask.metadata.blocked) && (
               <Alert
                 message="Task Blocked"
                 description="This task is waiting on dependencies or decisions before work can proceed."
                 type="warning"
-                style={{ marginTop: 16 }}
+                icon={<ExclamationCircleOutlined />}
+                style={{ marginBottom: 16 }}
+                showIcon
               />
+            )}
+
+            <Row gutter={16} style={{ marginBottom: 16 }}>
+              <Col span={12}>
+                {selectedTask.priority && (
+                  <div style={{ marginBottom: 12 }}>
+                    <Text type="secondary">Priority: </Text>
+                    <Tag color={selectedTask.priority.includes('CRITICAL') ? 'red' : selectedTask.priority.includes('HIGH') ? 'orange' : 'default'}>
+                      {selectedTask.priority}
+                    </Tag>
+                  </div>
+                )}
+                {selectedTask.complexity && (
+                  <div style={{ marginBottom: 12 }}>
+                    <Text type="secondary">Complexity: </Text>
+                    <Tag>{selectedTask.complexity}</Tag>
+                  </div>
+                )}
+              </Col>
+              <Col span={12}>
+                {selectedTask.assigned && (
+                  <div style={{ marginBottom: 12 }}>
+                    <Text type="secondary">Assigned: </Text>
+                    <Tag icon={<LinkOutlined />}>{selectedTask.assigned}</Tag>
+                  </div>
+                )}
+                {selectedTask.createdAt && (
+                  <div style={{ marginBottom: 12 }}>
+                    <Text type="secondary">Created: </Text>
+                    <Text>{new Date(selectedTask.createdAt).toLocaleString()}</Text>
+                  </div>
+                )}
+                {selectedTask.updatedAt && (
+                  <div style={{ marginBottom: 12 }}>
+                    <Text type="secondary">Updated: </Text>
+                    <Text>{new Date(selectedTask.updatedAt).toLocaleString()}</Text>
+                  </div>
+                )}
+              </Col>
+            </Row>
+
+            <Divider style={{ margin: '12px 0' }} />
+
+            <div style={{ marginBottom: 16 }}>
+              <Text strong>Description</Text>
+              <Paragraph
+                style={{
+                  marginTop: 8,
+                  whiteSpace: 'pre-wrap',
+                  background: '#f5f5f5',
+                  padding: 12,
+                  borderRadius: 4,
+                }}
+              >
+                {selectedTask.description}
+              </Paragraph>
+            </div>
+
+            {selectedTask.activeForm && (
+              <div style={{ marginBottom: 16 }}>
+                <Text strong>Active Form</Text>
+                <Paragraph style={{ marginTop: 8, fontStyle: 'italic' }}>
+                  {selectedTask.activeForm}
+                </Paragraph>
+              </div>
+            )}
+
+            {selectedTask.metadata && Object.keys(selectedTask.metadata).length > 0 && (
+              <div>
+                <Text strong>Metadata</Text>
+                <div
+                  style={{
+                    marginTop: 8,
+                    background: '#f5f5f5',
+                    padding: 12,
+                    borderRadius: 4,
+                    fontSize: 12,
+                    fontFamily: 'monospace',
+                  }}
+                >
+                  <pre style={{ margin: 0 }}>
+                    {JSON.stringify(selectedTask.metadata, null, 2)}
+                  </pre>
+                </div>
+              </div>
             )}
           </Modal>
         )}

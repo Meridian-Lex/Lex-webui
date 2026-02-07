@@ -12,10 +12,8 @@ const api = axios.create({
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
-      // Redirect to login on 401
-      window.location.href = '/login';
-    }
+    // Don't auto-redirect on 401 - let React Router handle navigation
+    // The App.tsx routes already redirect to /login when user is null
     return Promise.reject(error);
   }
 );

@@ -13,6 +13,11 @@ export interface LoginRequest {
 }
 
 export const authService = {
+  async checkSetupNeeded(): Promise<{ setupNeeded: boolean }> {
+    const response = await api.get('/auth/setup-needed');
+    return response.data;
+  },
+
   async setup(data: SetupRequest): Promise<{ user: User }> {
     const response = await api.post('/auth/setup', data);
     return response.data;

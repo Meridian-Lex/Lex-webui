@@ -17,16 +17,12 @@ export default function LoginPage(): React.ReactElement {
 
   async function checkFirstRun() {
     try {
-      // Try to get current user - if it works, not first run
-      await authService.me();
+      const { setupNeeded } = await authService.checkSetupNeeded();
+      setIsFirstRun(setupNeeded);
+    } catch (error) {
+      // On error, assume not first run (safer default)
+      console.error('Failed to check setup status:', error);
       setIsFirstRun(false);
-    } catch (error: any) {
-      // If we get 401, try setup endpoint to see if it's available
-      if (error.response?.status === 401) {
-        // Assume first run if no users exist
-        // The setup endpoint will return 403 if users already exist
-        setIsFirstRun(true);
-      }
     }
   }
 

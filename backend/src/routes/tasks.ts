@@ -1,10 +1,10 @@
 import { Router, Request, Response } from 'express';
 import Joi from 'joi';
 import { requireAuth } from '../middleware/auth';
-import { TaskService } from '../services/taskService';
+import { TaskQueueService } from '../services/taskQueueService';
 
 const router = Router();
-const taskService = new TaskService();
+const taskService = new TaskQueueService();
 
 // Validation schemas
 const createTaskSchema = Joi.object({
@@ -64,63 +64,28 @@ router.get('/:id', requireAuth, async (req: Request, res: Response): Promise<voi
   }
 });
 
-// POST /api/tasks - Create new task
+// POST /api/tasks - Create new task (READ-ONLY - tasks managed in TASK-QUEUE.md)
 router.post('/', requireAuth, async (req: Request, res: Response): Promise<void> => {
-  try {
-    const { error, value } = createTaskSchema.validate(req.body);
-
-    if (error) {
-      res.status(400).json({ error: error.details[0].message });
-      return;
-    }
-
-    const task = await taskService.createTask(value);
-    res.status(201).json(task);
-  } catch (error) {
-    console.error('Create task error:', error);
-    res.status(500).json({ error: 'Failed to create task' });
-  }
+  res.status(403).json({
+    error: 'Task queue is read-only. Tasks are managed in TASK-QUEUE.md',
+    readOnly: true
+  });
 });
 
-// PUT /api/tasks/:id - Update task
+// PUT /api/tasks/:id - Update task (READ-ONLY - tasks managed in TASK-QUEUE.md)
 router.put('/:id', requireAuth, async (req: Request, res: Response): Promise<void> => {
-  try {
-    const { error, value } = updateTaskSchema.validate(req.body);
-
-    if (error) {
-      res.status(400).json({ error: error.details[0].message });
-      return;
-    }
-
-    const task = await taskService.updateTask(req.params.id, value);
-
-    if (!task) {
-      res.status(404).json({ error: 'Task not found' });
-      return;
-    }
-
-    res.json(task);
-  } catch (error) {
-    console.error('Update task error:', error);
-    res.status(500).json({ error: 'Failed to update task' });
-  }
+  res.status(403).json({
+    error: 'Task queue is read-only. Tasks are managed in TASK-QUEUE.md',
+    readOnly: true
+  });
 });
 
-// DELETE /api/tasks/:id - Delete task
+// DELETE /api/tasks/:id - Delete task (READ-ONLY - tasks managed in TASK-QUEUE.md)
 router.delete('/:id', requireAuth, async (req: Request, res: Response): Promise<void> => {
-  try {
-    const success = await taskService.deleteTask(req.params.id);
-
-    if (!success) {
-      res.status(404).json({ error: 'Task not found' });
-      return;
-    }
-
-    res.json({ success: true });
-  } catch (error) {
-    console.error('Delete task error:', error);
-    res.status(500).json({ error: 'Failed to delete task' });
-  }
+  res.status(403).json({
+    error: 'Task queue is read-only. Tasks are managed in TASK-QUEUE.md',
+    readOnly: true
+  });
 });
 
 export default router;

@@ -5,39 +5,30 @@ import {
   Row,
   Col,
   Typography,
-  Button,
   Tag,
   Modal,
-  Form,
-  Input,
   Statistic,
   Space,
-  message,
+  Alert,
 } from 'antd';
 import {
-  PlusOutlined,
   CheckCircleOutlined,
   ClockCircleOutlined,
   PlayCircleOutlined,
-  DeleteOutlined,
+  InfoCircleOutlined,
 } from '@ant-design/icons';
-import { Link } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import { AppHeader } from '../components/AppHeader';
 import { taskApi, Task, TaskStats } from '../services/task.service';
 
-const { Header, Content } = Layout;
+const { Content } = Layout;
 const { Title, Text, Paragraph } = Typography;
-const { TextArea } = Input;
 
 export const TaskBoard: React.FC = () => {
-  const { user, logout } = useAuth();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [stats, setStats] = useState<TaskStats | null>(null);
   const [loading, setLoading] = useState(true);
-  const [createModalVisible, setCreateModalVisible] = useState(false);
   const [detailModalVisible, setDetailModalVisible] = useState(false);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
-  const [form] = Form.useForm();
 
   useEffect(() => {
     loadTasks();
@@ -70,45 +61,6 @@ export const TaskBoard: React.FC = () => {
     }
   };
 
-  const handleCreateTask = async (values: any) => {
-    try {
-      await taskApi.createTask(values);
-      message.success('Task created successfully');
-      setCreateModalVisible(false);
-      form.resetFields();
-      await loadTasks();
-      await loadStats();
-    } catch (error) {
-      message.error('Failed to create task');
-      console.error('Create task error:', error);
-    }
-  };
-
-  const handleUpdateStatus = async (taskId: string, status: 'in_progress' | 'completed') => {
-    try {
-      await taskApi.updateTask(taskId, { status });
-      message.success(`Task marked as ${status.replace('_', ' ')}`);
-      await loadTasks();
-      await loadStats();
-    } catch (error) {
-      message.error('Failed to update task');
-      console.error('Update task error:', error);
-    }
-  };
-
-  const handleDeleteTask = async (taskId: string) => {
-    try {
-      await taskApi.deleteTask(taskId);
-      message.success('Task deleted');
-      setDetailModalVisible(false);
-      await loadTasks();
-      await loadStats();
-    } catch (error) {
-      message.error('Failed to delete task');
-      console.error('Delete task error:', error);
-    }
-  };
-
   const showTaskDetails = (task: Task) => {
     setSelectedTask(task);
     setDetailModalVisible(true);
@@ -126,6 +78,13 @@ export const TaskBoard: React.FC = () => {
       deleted: 'error',
     };
 
+    const priorityColors: Record<string, string> = {
+      CRITICAL: 'red',
+      HIGH: 'orange',
+      MEDIUM: 'gold',
+      LOW: 'green',
+    };
+
     return (
       <Card
         key={task.id}
@@ -135,7 +94,7 @@ export const TaskBoard: React.FC = () => {
         hoverable
       >
         <div style={{ marginBottom: 8 }}>
-          <Text strong>{task.subject}</Text>
+          <Text strong>Task {task.id}: {task.subject}</Text>
         </div>
         <Paragraph
           ellipsis={{ rows: 2 }}
@@ -144,78 +103,34 @@ export const TaskBoard: React.FC = () => {
         >
           {task.description}
         </Paragraph>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Space size="small" wrap>
           <Tag color={statusColors[task.status]}>{task.status.replace('_', ' ').toUpperCase()}</Tag>
-          {task.status === 'pending' && (
-            <Button
-              size="small"
-              icon={<PlayCircleOutlined />}
-              onClick={(e) => {
-                e.stopPropagation();
-                handleUpdateStatus(task.id, 'in_progress');
-              }}
-            >
-              Start
-            </Button>
+          {task.priority && (
+            <Tag color={priorityColors[task.priority.toUpperCase().split(' ')[0]]}>
+              {task.priority}
+            </Tag>
           )}
-          {task.status === 'in_progress' && (
-            <Button
-              size="small"
-              type="primary"
-              icon={<CheckCircleOutlined />}
-              onClick={(e) => {
-                e.stopPropagation();
-                handleUpdateStatus(task.id, 'completed');
-              }}
-            >
-              Complete
-            </Button>
+          {task.complexity && (
+            <Tag>{task.complexity.split(' ')[0]}</Tag>
           )}
-        </div>
+        </Space>
       </Card>
     );
   };
 
   return (
     <Layout>
-      <Header
-        style={{
-          background: '#001529',
-          padding: '0 24px',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-        }}
-      >
-        <Title level={3} style={{ color: 'white', margin: 0 }}>
-          Lex Fleet Command
-        </Title>
-        <div>
-          <Link to="/" style={{ color: 'white', marginRight: 24 }}>
-            Dashboard
-          </Link>
-          <Link to="/projects" style={{ color: 'white', marginRight: 24 }}>
-            Projects
-          </Link>
-          <Link to="/logs" style={{ color: 'white', marginRight: 24 }}>
-            Logs
-          </Link>
-          <Link to="/config" style={{ color: 'white', marginRight: 24 }}>
-            Configuration
-          </Link>
-          <Text style={{ color: 'white', marginRight: 16 }}>{user?.username}</Text>
-          <Button onClick={logout} size="small">
-            Logout
-          </Button>
-        </div>
-      </Header>
-
+      <AppHeader />
       <Content style={{ padding: 24, minHeight: 'calc(100vh - 64px)' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+        <div style={{ marginBottom: 24 }}>
           <Title level={2}>Task Board</Title>
-          <Button type="primary" icon={<PlusOutlined />} onClick={() => setCreateModalVisible(true)}>
-            New Task
-          </Button>
+          <Alert
+            message="Read-Only View"
+            description="Tasks are managed in TASK-QUEUE.md and cannot be edited through the webui. This view displays your current lex infrastructure tasks."
+            type="info"
+            icon={<InfoCircleOutlined />}
+            style={{ marginTop: 16 }}
+          />
         </div>
 
         {stats && (
@@ -323,126 +238,64 @@ export const TaskBoard: React.FC = () => {
           </Col>
         </Row>
 
-        {/* Create Task Modal */}
-        <Modal
-          title="Create New Task"
-          open={createModalVisible}
-          onCancel={() => {
-            setCreateModalVisible(false);
-            form.resetFields();
-          }}
-          onOk={() => form.submit()}
-          okText="Create"
-        >
-          <Form form={form} layout="vertical" onFinish={handleCreateTask}>
-            <Form.Item
-              name="subject"
-              label="Subject"
-              rules={[{ required: true, message: 'Please enter task subject' }]}
-            >
-              <Input placeholder="Brief task title" />
-            </Form.Item>
-
-            <Form.Item
-              name="description"
-              label="Description"
-              rules={[{ required: true, message: 'Please enter task description' }]}
-            >
-              <TextArea rows={4} placeholder="Detailed task description" />
-            </Form.Item>
-
-            <Form.Item name="activeForm" label="Active Form (optional)">
-              <Input placeholder="Present continuous form (e.g., 'Processing data')" />
-            </Form.Item>
-          </Form>
-        </Modal>
-
         {/* Task Details Modal */}
         {selectedTask && (
           <Modal
-            title="Task Details"
+            title={`Task ${selectedTask.id} Details`}
             open={detailModalVisible}
             onCancel={() => {
               setDetailModalVisible(false);
               setSelectedTask(null);
             }}
-            footer={[
-              <Button
-                key="delete"
-                danger
-                icon={<DeleteOutlined />}
-                onClick={() => handleDeleteTask(selectedTask.id)}
-              >
-                Delete
-              </Button>,
-              <Button key="close" onClick={() => setDetailModalVisible(false)}>
-                Close
-              </Button>,
-            ]}
-            width={600}
+            footer={null}
+            width={700}
           >
             <div style={{ marginBottom: 16 }}>
               <Text strong style={{ fontSize: 18 }}>{selectedTask.subject}</Text>
               <div style={{ marginTop: 8 }}>
-                <Tag>{selectedTask.status.replace('_', ' ').toUpperCase()}</Tag>
+                <Space wrap>
+                  <Tag color={selectedTask.status === 'completed' ? 'success' : selectedTask.status === 'in_progress' ? 'processing' : 'default'}>
+                    {selectedTask.status.replace('_', ' ').toUpperCase()}
+                  </Tag>
+                  {selectedTask.priority && (
+                    <>
+                      <Text type="secondary">Priority:</Text>
+                      <Tag color={selectedTask.priority.includes('CRITICAL') ? 'red' : selectedTask.priority.includes('HIGH') ? 'orange' : 'default'}>
+                        {selectedTask.priority}
+                      </Tag>
+                    </>
+                  )}
+                </Space>
               </div>
             </div>
 
             <div style={{ marginBottom: 16 }}>
               <Text strong>Description:</Text>
-              <Paragraph style={{ marginTop: 8 }}>{selectedTask.description}</Paragraph>
+              <Paragraph style={{ marginTop: 8, whiteSpace: 'pre-wrap' }}>{selectedTask.description}</Paragraph>
             </div>
 
-            {selectedTask.activeForm && (
+            {selectedTask.complexity && (
               <div style={{ marginBottom: 16 }}>
-                <Text strong>Active Form:</Text>
-                <Paragraph style={{ marginTop: 8 }}>{selectedTask.activeForm}</Paragraph>
+                <Text strong>Complexity:</Text>
+                <Paragraph style={{ marginTop: 8 }}>{selectedTask.complexity}</Paragraph>
               </div>
             )}
 
-            <div style={{ marginBottom: 16 }}>
-              <Space>
-                <div>
-                  <Text type="secondary">Created:</Text>
-                  <br />
-                  <Text>{new Date(selectedTask.createdAt).toLocaleString()}</Text>
-                </div>
-                <div>
-                  <Text type="secondary">Updated:</Text>
-                  <br />
-                  <Text>{new Date(selectedTask.updatedAt).toLocaleString()}</Text>
-                </div>
-              </Space>
-            </div>
+            {selectedTask.assigned && (
+              <div style={{ marginBottom: 16 }}>
+                <Text strong>Assigned:</Text>
+                <Paragraph style={{ marginTop: 8 }}>{selectedTask.assigned}</Paragraph>
+              </div>
+            )}
 
-            <div style={{ marginTop: 24 }}>
-              <Space>
-                {selectedTask.status === 'pending' && (
-                  <Button
-                    type="primary"
-                    icon={<PlayCircleOutlined />}
-                    onClick={() => {
-                      handleUpdateStatus(selectedTask.id, 'in_progress');
-                      setDetailModalVisible(false);
-                    }}
-                  >
-                    Mark In Progress
-                  </Button>
-                )}
-                {selectedTask.status === 'in_progress' && (
-                  <Button
-                    type="primary"
-                    icon={<CheckCircleOutlined />}
-                    onClick={() => {
-                      handleUpdateStatus(selectedTask.id, 'completed');
-                      setDetailModalVisible(false);
-                    }}
-                  >
-                    Mark Completed
-                  </Button>
-                )}
-              </Space>
-            </div>
+            {selectedTask.metadata && 'blocked' in selectedTask.metadata && Boolean(selectedTask.metadata.blocked) && (
+              <Alert
+                message="Task Blocked"
+                description="This task is waiting on dependencies or decisions before work can proceed."
+                type="warning"
+                style={{ marginTop: 16 }}
+              />
+            )}
           </Modal>
         )}
       </Content>

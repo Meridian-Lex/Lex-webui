@@ -5,10 +5,13 @@ export interface Task {
   subject: string;
   description: string;
   status: 'pending' | 'in_progress' | 'completed' | 'deleted';
+  priority?: string;
+  assigned?: string;
+  complexity?: string;
   activeForm?: string;
   metadata?: Record<string, unknown>;
-  createdAt: string;
-  updatedAt: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface TaskStats {

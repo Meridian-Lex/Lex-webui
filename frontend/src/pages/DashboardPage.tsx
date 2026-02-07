@@ -1,18 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Layout, Card, Row, Col, Button, Typography, Tag } from 'antd';
 import { RocketOutlined, PauseOutlined } from '@ant-design/icons';
-import { Link } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
 import api from '../services/api';
 import { LexStatus } from '../types';
 import { TokenBudgetChart } from '../components/TokenBudgetChart';
-import { ThemeToggle } from '../components/ThemeToggle';
+import { AppHeader } from '../components/AppHeader';
 
-const { Header, Content } = Layout;
+const { Content } = Layout;
 const { Title, Text } = Typography;
 
 export default function DashboardPage(): React.ReactElement {
-  const { user, logout } = useAuth();
   const [status, setStatus] = useState<LexStatus | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -52,18 +49,7 @@ export default function DashboardPage(): React.ReactElement {
 
   return (
     <Layout>
-      <Header style={{ background: '#001529', padding: '0 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Title level={3} style={{ color: 'white', margin: 0 }}>Lex Fleet Command</Title>
-        <div>
-          <Link to="/projects" style={{ color: 'white', marginRight: 24 }}>Projects</Link>
-          <Link to="/tasks" style={{ color: 'white', marginRight: 24 }}>Tasks</Link>
-          <Link to="/logs" style={{ color: 'white', marginRight: 24 }}>Logs</Link>
-          <Link to="/config" style={{ color: 'white', marginRight: 24 }}>Configuration</Link>
-          <ThemeToggle />
-          <Text style={{ color: 'white', marginRight: 16 }}>{user?.username}</Text>
-          <Button onClick={logout} size="small">Logout</Button>
-        </div>
-      </Header>
+      <AppHeader />
       <Content style={{ padding: 24, minHeight: 'calc(100vh - 64px)' }}>
         <Row gutter={[16, 16]}>
           <Col span={24}>

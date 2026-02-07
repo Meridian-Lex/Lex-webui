@@ -1,16 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Layout, Card, Table, Typography, Button } from 'antd';
+import { Layout, Card, Table, Button } from 'antd';
 import { Link } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
-import { ThemeToggle } from '../components/ThemeToggle';
+import { AppHeader } from '../components/AppHeader';
 import api from '../services/api';
 import { Project } from '../types';
 
-const { Header, Content } = Layout;
-const { Title, Text } = Typography;
+const { Content } = Layout;
 
 export default function ProjectsPage(): React.ReactElement {
-  const { user, logout } = useAuth();
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -57,18 +54,7 @@ export default function ProjectsPage(): React.ReactElement {
 
   return (
     <Layout>
-      <Header style={{ background: '#001529', padding: '0 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Title level={3} style={{ color: 'white', margin: 0 }}>Lex Fleet Command</Title>
-        <div>
-          <Link to="/" style={{ color: 'white', marginRight: 24 }}>Dashboard</Link>
-          <Link to="/tasks" style={{ color: 'white', marginRight: 24 }}>Tasks</Link>
-          <Link to="/logs" style={{ color: 'white', marginRight: 24 }}>Logs</Link>
-          <Link to="/config" style={{ color: 'white', marginRight: 24 }}>Configuration</Link>
-          <ThemeToggle />
-          <Text style={{ color: 'white', marginRight: 16 }}>{user?.username}</Text>
-          <Button onClick={logout} size="small">Logout</Button>
-        </div>
-      </Header>
+      <AppHeader />
       <Content style={{ padding: 24, minHeight: 'calc(100vh - 64px)' }}>
         <div style={{ marginBottom: 16 }}>
           <Link to="/projects/graph">

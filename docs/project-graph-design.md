@@ -72,7 +72,7 @@ Read from `~/meridian-home/PROJECT-MAP.md` and parse markdown structure to extra
 
 ## Implementation Plan
 
-1. ✅ Design document
+1. COMPLETE Design document
 2. Backend graph data service
 3. API endpoint for graph data
 4. Frontend graph page

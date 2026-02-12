@@ -74,63 +74,63 @@ Comprehensive fleet command interface for the Meridian Lex autonomous developmen
 
 ```
 src/
-├── components/          # Reusable UI components
-│   ├── auth/           # Login, user management
-│   │   ├── LoginForm.tsx
-│   │   ├── FirstRunSetup.tsx
-│   │   └── UserProfile.tsx
-│   ├── dashboard/      # Status cards, metrics
-│   │   ├── StatusCard.tsx
-│   │   ├── TokenBudgetGauge.tsx
-│   │   ├── ModeControl.tsx
-│   │   └── CurrentProject.tsx
-│   ├── projects/       # Project management
-│   │   ├── ProjectList.tsx
-│   │   ├── ProjectCard.tsx
-│   │   ├── ProjectDetail.tsx
-│   │   ├── ProjectGraph.tsx (v1.1)
-│   │   └── ProjectCreator.tsx (v1.2)
-│   ├── logs/           # Log viewing
-│   │   ├── LogViewer.tsx
-│   │   ├── LogFilter.tsx
-│   │   └── LogExport.tsx
-│   ├── config/         # Configuration
-│   │   ├── ConfigViewer.tsx (v1.1)
-│   │   ├── ConfigEditor.tsx (v1.2)
-│   │   └── ConfigValidation.tsx (v1.2)
-│   └── tasks/          # Task management
-│       ├── TaskBoard.tsx (v1.1)
-│       └── TaskManager.tsx (v1.2)
-├── pages/              # Route-level components
-│   ├── Dashboard.tsx   # Main overview
-│   ├── Projects.tsx    # Project management
-│   ├── Logs.tsx        # Log viewing
-│   ├── Tasks.tsx       # Task board (v1.1)
-│   ├── Config.tsx      # Configuration (v1.1)
-│   └── Settings.tsx    # User settings
-├── services/           # API client
-│   ├── api.ts          # Axios instance, interceptors
-│   ├── auth.service.ts
-│   ├── status.service.ts
-│   ├── projects.service.ts
-│   ├── logs.service.ts
-│   ├── config.service.ts
-│   └── tasks.service.ts
-├── hooks/              # Custom React hooks
-│   ├── useAuth.ts
-│   ├── useStatus.ts
-│   ├── usePolling.ts
-│   └── useWebSocket.ts (v2.0)
-├── types/              # TypeScript definitions
-│   ├── auth.types.ts
-│   ├── status.types.ts
-│   ├── project.types.ts
-│   └── api.types.ts
-├── utils/              # Helper functions
-│   ├── dateFormat.ts
-│   ├── tokenCalculator.ts
-│   └── validators.ts
-└── App.tsx             # Root component, routing
+├── components/ # Reusable UI components
+│ ├── auth/ # Login, user management
+│ │ ├── LoginForm.tsx
+│ │ ├── FirstRunSetup.tsx
+│ │ └── UserProfile.tsx
+│ ├── dashboard/ # Status cards, metrics
+│ │ ├── StatusCard.tsx
+│ │ ├── TokenBudgetGauge.tsx
+│ │ ├── ModeControl.tsx
+│ │ └── CurrentProject.tsx
+│ ├── projects/ # Project management
+│ │ ├── ProjectList.tsx
+│ │ ├── ProjectCard.tsx
+│ │ ├── ProjectDetail.tsx
+│ │ ├── ProjectGraph.tsx (v1.1)
+│ │ └── ProjectCreator.tsx (v1.2)
+│ ├── logs/ # Log viewing
+│ │ ├── LogViewer.tsx
+│ │ ├── LogFilter.tsx
+│ │ └── LogExport.tsx
+│ ├── config/ # Configuration
+│ │ ├── ConfigViewer.tsx (v1.1)
+│ │ ├── ConfigEditor.tsx (v1.2)
+│ │ └── ConfigValidation.tsx (v1.2)
+│ └── tasks/ # Task management
+│ ├── TaskBoard.tsx (v1.1)
+│ └── TaskManager.tsx (v1.2)
+├── pages/ # Route-level components
+│ ├── Dashboard.tsx # Main overview
+│ ├── Projects.tsx # Project management
+│ ├── Logs.tsx # Log viewing
+│ ├── Tasks.tsx # Task board (v1.1)
+│ ├── Config.tsx # Configuration (v1.1)
+│ └── Settings.tsx # User settings
+├── services/ # API client
+│ ├── api.ts # Axios instance, interceptors
+│ ├── auth.service.ts
+│ ├── status.service.ts
+│ ├── projects.service.ts
+│ ├── logs.service.ts
+│ ├── config.service.ts
+│ └── tasks.service.ts
+├── hooks/ # Custom React hooks
+│ ├── useAuth.ts
+│ ├── useStatus.ts
+│ ├── usePolling.ts
+│ └── useWebSocket.ts (v2.0)
+├── types/ # TypeScript definitions
+│ ├── auth.types.ts
+│ ├── status.types.ts
+│ ├── project.types.ts
+│ └── api.types.ts
+├── utils/ # Helper functions
+│ ├── dateFormat.ts
+│ ├── tokenCalculator.ts
+│ └── validators.ts
+└── App.tsx # Root component, routing
 ```
 
 ### Backend Architecture
@@ -138,36 +138,36 @@ src/
 ```
 src/
 ├── routes/
-│   ├── auth.ts         # Authentication endpoints
-│   ├── status.ts       # Lex status, mode, state
-│   ├── projects.ts     # Project CRUD, relationships
-│   ├── logs.ts         # Log retrieval, filtering
-│   ├── config.ts       # Configuration read/write
-│   ├── tasks.ts        # Task management (v1.1)
-│   └── commands.ts     # Execute Lex operations (v1.2)
+│ ├── auth.ts # Authentication endpoints
+│ ├── status.ts # Lex status, mode, state
+│ ├── projects.ts # Project CRUD, relationships
+│ ├── logs.ts # Log retrieval, filtering
+│ ├── config.ts # Configuration read/write
+│ ├── tasks.ts # Task management (v1.1)
+│ └── commands.ts # Execute Lex operations (v1.2)
 ├── middleware/
-│   ├── auth.ts         # Session validation
-│   ├── rateLimit.ts    # Rate limiting
-│   ├── audit.ts        # Audit logging
-│   ├── validation.ts   # Input validation
-│   └── errorHandler.ts # Centralized error handling
+│ ├── auth.ts # Session validation
+│ ├── rateLimit.ts # Rate limiting
+│ ├── audit.ts # Audit logging
+│ ├── validation.ts # Input validation
+│ └── errorHandler.ts # Centralized error handling
 ├── services/
-│   ├── lexFileSystem.ts    # Read/write Lex files
-│   ├── lexCommands.ts      # Execute lex CLI
-│   ├── tokenBudget.ts      # Parse/update budgets
-│   ├── projectMap.ts       # Parse PROJECT-MAP.md
-│   └── stateManager.ts     # Parse/update STATE.md
-├── models/             # Database models (TypeORM)
-│   ├── User.ts
-│   ├── Session.ts
-│   ├── AuditLog.ts
-│   └── ProjectCache.ts (v1.1)
-├── types/              # Shared TypeScript types
-├── config/             # Configuration
-│   ├── database.ts
-│   ├── redis.ts
-│   └── security.ts
-└── server.ts           # Express app setup
+│ ├── lexFileSystem.ts # Read/write Lex files
+│ ├── lexCommands.ts # Execute lex CLI
+│ ├── tokenBudget.ts # Parse/update budgets
+│ ├── projectMap.ts # Parse PROJECT-MAP.md
+│ └── stateManager.ts # Parse/update STATE.md
+├── models/ # Database models (TypeORM)
+│ ├── User.ts
+│ ├── Session.ts
+│ ├── AuditLog.ts
+│ └── ProjectCache.ts (v1.1)
+├── types/ # Shared TypeScript types
+├── config/ # Configuration
+│ ├── database.ts
+│ ├── redis.ts
+│ └── security.ts
+└── server.ts # Express app setup
 ```
 
 ---
@@ -339,7 +339,7 @@ GET /api/status/health
 
 ```
 GET /api/projects
-  Query: ?status=active&sort=name
+  Query:?status=active&sort=name
   Response: {
     projects: [
       {
@@ -381,7 +381,7 @@ PUT /api/projects/:name (v1.2)
 
 ```
 GET /api/logs
-  Query: ?lines=100&level=error&since=timestamp
+  Query:?lines=100&level=error&since=timestamp
   Response: {
     logs: [
       {
@@ -663,15 +663,15 @@ services:
     ports:
       - "3000:80"
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./frontend/dist:/usr/share/nginx/html:ro
+      -./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      -./frontend/dist:/usr/share/nginx/html:ro
     depends_on:
       - backend
     restart: unless-stopped
 
   backend:
     build:
-      context: ./backend
+      context:./backend
       dockerfile: Dockerfile
     ports:
       - "3001:3001"
@@ -683,7 +683,7 @@ services:
       - MERIDIAN_HOME=/meridian-home
     volumes:
       - /home/meridian/meridian-home:/meridian-home:ro
-      - ./logs:/var/log/lex-webui
+      -./logs:/var/log/lex-webui
     depends_on:
       - postgres
       - redis
@@ -833,42 +833,42 @@ ALLOWED_ORIGINS=http://localhost:3000,https://your-domain.com
 ### Security Testing (Priority: CRITICAL)
 
 **Authentication Tests:**
-- ✓ First-run setup only available when no users exist
-- ✓ Setup endpoint disabled after first user created
-- ✓ Login with correct credentials succeeds
-- ✓ Login with incorrect credentials fails
-- ✓ Password hashing uses bcrypt (verify never plaintext)
-- ✓ Session creation sets httpOnly, secure cookies
-- ✓ Session expiry enforced (24 hours)
-- ✓ Logout destroys session completely
-- ✓ Unauthenticated requests to protected endpoints rejected
+- [OK] First-run setup only available when no users exist
+- [OK] Setup endpoint disabled after first user created
+- [OK] Login with correct credentials succeeds
+- [OK] Login with incorrect credentials fails
+- [OK] Password hashing uses bcrypt (verify never plaintext)
+- [OK] Session creation sets httpOnly, secure cookies
+- [OK] Session expiry enforced (24 hours)
+- [OK] Logout destroys session completely
+- [OK] Unauthenticated requests to protected endpoints rejected
 
 **Injection Tests:**
-- ✓ SQL injection attempts blocked (test all input fields)
-- ✓ Command injection attempts blocked (test command executor)
-- ✓ Path traversal attempts blocked (test file operations)
-- ✓ XSS payloads escaped (test all text rendering)
-- ✓ CSRF tokens validated on state-changing operations
-- ✓ Malformed JSON rejected with proper error handling
+- [OK] SQL injection attempts blocked (test all input fields)
+- [OK] Command injection attempts blocked (test command executor)
+- [OK] Path traversal attempts blocked (test file operations)
+- [OK] XSS payloads escaped (test all text rendering)
+- [OK] CSRF tokens validated on state-changing operations
+- [OK] Malformed JSON rejected with proper error handling
 
 **Rate Limiting Tests:**
-- ✓ Auth endpoints: >5/min blocked
-- ✓ API endpoints: >1000/15min blocked
-- ✓ Command executor: >10/min blocked
-- ✓ Rate limits reset after window expires
+- [OK] Auth endpoints: >5/min blocked
+- [OK] API endpoints: >1000/15min blocked
+- [OK] Command executor: >10/min blocked
+- [OK] Rate limits reset after window expires
 
 **Authorization Tests:**
-- ✓ Admin can access all endpoints
-- ✓ Viewer can only read, not modify (v2.0)
-- ✓ Unauthenticated users redirected to login
-- ✓ Session hijacking prevented (verify SameSite)
+- [OK] Admin can access all endpoints
+- [OK] Viewer can only read, not modify (v2.0)
+- [OK] Unauthenticated users redirected to login
+- [OK] Session hijacking prevented (verify SameSite)
 
 **Data Validation Tests:**
-- ✓ Invalid mode changes rejected
-- ✓ Invalid project names rejected
-- ✓ Invalid configuration YAML rejected
-- ✓ Overly long inputs rejected
-- ✓ Type mismatches rejected
+- [OK] Invalid mode changes rejected
+- [OK] Invalid project names rejected
+- [OK] Invalid configuration YAML rejected
+- [OK] Overly long inputs rejected
+- [OK] Type mismatches rejected
 
 ### Unit Tests
 
@@ -931,13 +931,13 @@ ALLOWED_ORIGINS=http://localhost:3000,https://your-domain.com
 cd ~/meridian-home/projects/Lex-webui
 
 # Generate secrets
-openssl rand -hex 32 > .db-password
-openssl rand -hex 64 > .session-secret
+openssl rand -hex 32 >.db-password
+openssl rand -hex 64 >.session-secret
 
-# Create .env file
-cat > .env << EOF
-DB_PASSWORD=$(cat .db-password)
-SESSION_SECRET=$(cat .session-secret)
+# Create.env file
+cat >.env << EOF
+DB_PASSWORD=$(cat.db-password)
+SESSION_SECRET=$(cat.session-secret)
 MERIDIAN_HOME=/home/meridian/meridian-home
 NODE_ENV=development
 PORT=3001
@@ -949,36 +949,36 @@ docker-compose up -d
 
 # Install dependencies
 cd backend && npm install
-cd ../frontend && npm install
+cd../frontend && npm install
 
 # Run database migrations
-cd ../backend && npm run db:migrate
+cd../backend && npm run db:migrate
 
 # Start development servers
-npm run dev  # Both frontend and backend
+npm run dev # Both frontend and backend
 ```
 
 ### Development Commands
 
 **Backend:**
 ```bash
-npm run dev          # Start with hot reload
-npm run build        # Compile TypeScript
-npm run test         # Run unit tests
+npm run dev # Start with hot reload
+npm run build # Compile TypeScript
+npm run test # Run unit tests
 npm run test:security # Run security tests
-npm run db:migrate   # Run migrations
-npm run db:seed      # Seed test data
-npm run lint         # ESLint check
+npm run db:migrate # Run migrations
+npm run db:seed # Seed test data
+npm run lint # ESLint check
 ```
 
 **Frontend:**
 ```bash
-npm run dev          # Start Vite dev server
-npm run build        # Build for production
-npm run test         # Run Vitest unit tests
-npm run test:e2e     # Run Playwright E2E tests
-npm run lint         # ESLint check
-npm run type-check   # TypeScript check
+npm run dev # Start Vite dev server
+npm run build # Build for production
+npm run test # Run Vitest unit tests
+npm run test:e2e # Run Playwright E2E tests
+npm run lint # ESLint check
+npm run type-check # TypeScript check
 ```
 
 ### Git Workflow
@@ -1092,7 +1092,7 @@ Before deployment, verify:
 - [ ] Input validation on all user input
 - [ ] Audit logging functional
 - [ ] Database credentials not in code
-- [ ] .env file permissions 600
+- [ ].env file permissions 600
 - [ ] No sensitive data in logs
 - [ ] Error messages don't leak system info
 - [ ] HTTPS configured for remote access
@@ -1107,48 +1107,48 @@ Before deployment, verify:
 ```
 Lex-webui/
 ├── backend/
-│   ├── src/
-│   │   ├── routes/
-│   │   ├── middleware/
-│   │   ├── services/
-│   │   ├── models/
-│   │   ├── types/
-│   │   ├── config/
-│   │   └── server.ts
-│   ├── tests/
-│   │   ├── unit/
-│   │   ├── integration/
-│   │   └── security/
-│   ├── migrations/
-│   ├── Dockerfile
-│   ├── package.json
-│   └── tsconfig.json
+│ ├── src/
+│ │ ├── routes/
+│ │ ├── middleware/
+│ │ ├── services/
+│ │ ├── models/
+│ │ ├── types/
+│ │ ├── config/
+│ │ └── server.ts
+│ ├── tests/
+│ │ ├── unit/
+│ │ ├── integration/
+│ │ └── security/
+│ ├── migrations/
+│ ├── Dockerfile
+│ ├── package.json
+│ └── tsconfig.json
 ├── frontend/
-│   ├── src/
-│   │   ├── components/
-│   │   ├── pages/
-│   │   ├── services/
-│   │   ├── hooks/
-│   │   ├── types/
-│   │   ├── utils/
-│   │   └── App.tsx
-│   ├── tests/
-│   │   ├── unit/
-│   │   └── e2e/
-│   ├── public/
-│   ├── package.json
-│   ├── vite.config.ts
-│   └── tsconfig.json
+│ ├── src/
+│ │ ├── components/
+│ │ ├── pages/
+│ │ ├── services/
+│ │ ├── hooks/
+│ │ ├── types/
+│ │ ├── utils/
+│ │ └── App.tsx
+│ ├── tests/
+│ │ ├── unit/
+│ │ └── e2e/
+│ ├── public/
+│ ├── package.json
+│ ├── vite.config.ts
+│ └── tsconfig.json
 ├── nginx/
-│   └── nginx.conf
+│ └── nginx.conf
 ├── docs/
-│   ├── plans/
-│   │   └── 2026-02-06-lex-webui-design.md (this file)
-│   ├── api/
-│   └── deployment/
+│ ├── plans/
+│ │ └── 2026-02-06-lex-webui-design.md (this file)
+│ ├── api/
+│ └── deployment/
 ├── docker-compose.yml
-├── .env.example
-├── .gitignore
+├──.env.example
+├──.gitignore
 └── README.md
 ```
 

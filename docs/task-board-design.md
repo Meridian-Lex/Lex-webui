@@ -93,15 +93,15 @@ Create new task
 ### Layout
 ```
 ┌─────────────────────────────────────────────────┐
-│ Task Board                                      │
+│ Task Board │
 ├─────────────────────────────────────────────────┤
-│ ┌─────────┐  ┌─────────┐  ┌─────────┐         │
-│ │ Pending │  │In Progress│ │Completed│         │
-│ ├─────────┤  ├─────────┤  ├─────────┤         │
-│ │ Task 1  │  │ Task 3  │  │ Task 5  │         │
-│ │ Task 2  │  │ Task 4  │  │ Task 6  │         │
-│ │ Task 7  │  │         │  │         │         │
-│ └─────────┘  └─────────┘  └─────────┘         │
+│ ┌─────────┐ ┌─────────┐ ┌─────────┐ │
+│ │ Pending │ │In Progress│ │Completed│ │
+│ ├─────────┤ ├─────────┤ ├─────────┤ │
+│ │ Task 1 │ │ Task 3 │ │ Task 5 │ │
+│ │ Task 2 │ │ Task 4 │ │ Task 6 │ │
+│ │ Task 7 │ │ │ │ │ │
+│ └─────────┘ └─────────┘ └─────────┘ │
 └─────────────────────────────────────────────────┘
 ```
 
@@ -114,7 +114,7 @@ Create new task
 
 ## Implementation Plan
 
-1. ✅ Design document creation
+1. COMPLETE Design document creation
 2. Backend task service implementation
 3. Backend API routes
 4. Frontend task board page

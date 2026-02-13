@@ -4,6 +4,7 @@ import {
   Modal, Form, Input, Alert, Tag,
 } from 'antd';
 import { PlusOutlined, ReloadOutlined } from '@ant-design/icons';
+import { Link } from 'react-router-dom';
 import type { ColumnsType } from 'antd/es/table';
 import { projectApi } from '../services/stratavore.service';
 import { AppHeader } from '../components/AppHeader';
@@ -55,7 +56,11 @@ export default function ProjectsPage(): React.ReactElement {
       title: 'Name',
       dataIndex: 'name',
       sorter: (a, b) => a.name.localeCompare(b.name),
-      render: (name: string) => <strong>{name}</strong>,
+      render: (name: string) => (
+        <Link to={`/projects/${encodeURIComponent(name)}`}>
+          <strong>{name}</strong>
+        </Link>
+      ),
     },
     {
       title: 'Status',

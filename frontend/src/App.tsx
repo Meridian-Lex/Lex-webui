@@ -4,6 +4,9 @@ import { Layout } from 'antd';
 import DashboardPage from './pages/DashboardPage';
 import RunnersPage from './pages/RunnersPage';
 import ProjectsPage from './pages/ProjectsPage';
+import SessionsPage from './pages/SessionsPage';
+import MetricsPage from './pages/MetricsPage';
+import ProjectDetailPage from './pages/ProjectDetailPage';
 
 const { Content } = Layout;
 
@@ -16,6 +19,9 @@ function App(): React.ReactElement {
             <Route path="/" element={<DashboardPage />} />
             <Route path="/runners" element={<RunnersPage />} />
             <Route path="/projects" element={<ProjectsPage />} />
+            <Route path="/projects/:name" element={<ProjectDetailPage />} />
+            <Route path="/sessions" element={<SessionsPage />} />
+            <Route path="/metrics" element={<MetricsPage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </Content>

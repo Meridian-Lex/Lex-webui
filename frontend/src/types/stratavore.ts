@@ -98,3 +98,18 @@ export interface ReconcileResponse {
   failedRunnerIds: string[];
   error?: string;
 }
+
+export interface Session {
+  id: string;
+  runner_id: string;
+  project_name: string;
+  started_at: string;
+  ended_at?: string;
+  last_message_at?: string;
+  message_count: number;
+  tokens_used: number;
+  resumable: boolean;
+  resumed_from?: string;
+  summary?: string;
+  created_at: string;
+}

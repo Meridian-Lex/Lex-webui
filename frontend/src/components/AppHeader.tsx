@@ -13,6 +13,8 @@ export const AppHeader: React.FC = () => {
     { path: '/', label: 'Dashboard' },
     { path: '/runners', label: 'Runners' },
     { path: '/projects', label: 'Projects' },
+    { path: '/sessions', label: 'Sessions' },
+    { path: '/metrics', label: 'Metrics' },
   ];
 
   return (

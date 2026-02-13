@@ -2,7 +2,6 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { ConfigProvider, theme } from 'antd';
 import App from './App';
-import { AuthProvider } from './contexts/AuthContext';
 import { ThemeProvider, useTheme } from './contexts/ThemeContext';
 import './index.css';
 
@@ -34,9 +33,7 @@ function ThemedApp() {
 ReactDOM.createRoot(rootElement).render(
   <React.StrictMode>
     <ThemeProvider>
-      <AuthProvider>
-        <ThemedApp />
-      </AuthProvider>
+      <ThemedApp />
     </ThemeProvider>
   </React.StrictMode>
 );

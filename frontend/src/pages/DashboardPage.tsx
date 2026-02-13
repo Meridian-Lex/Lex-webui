@@ -1,90 +1,66 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
-  Layout,
-  Card,
-  Row,
-  Col,
-  Button,
-  Typography,
-  Tag,
-  Alert,
-  Skeleton,
-  Space,
-  Divider,
-  Statistic,
+  Layout, Card, Row, Col, Typography, Tag, Alert,
+  Skeleton, Statistic, Button, Space, Tooltip,
 } from 'antd';
 import {
-  RocketOutlined,
-  PauseOutlined,
-  SyncOutlined,
-  CheckCircleOutlined,
-  ClockCircleOutlined,
+  CheckCircleOutlined, WarningOutlined, SyncOutlined,
+  ReloadOutlined,
 } from '@ant-design/icons';
-import api from '../services/api';
-import { LexStatus } from '../types';
-import { TokenBudgetChart } from '../components/TokenBudgetChart';
+import { statusApi } from '../services/stratavore.service';
 import { AppHeader } from '../components/AppHeader';
+import type { StatusResponse } from '../types/stratavore';
 
 const { Content } = Layout;
 const { Title, Text } = Typography;
 
+const POLL_INTERVAL_MS = 5000;
+
 export default function DashboardPage(): React.ReactElement {
-  const [status, setStatus] = useState<LexStatus | null>(null);
+  const [status, setStatus] = useState<StatusResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [modeChanging, setModeChanging] = useState(false);
-  const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
+  const [reconciling, setReconciling] = useState(false);
+  const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
 
-  useEffect(() => {
-    fetchStatus();
-    const interval = setInterval(fetchStatus, 5000); // Poll every 5 seconds
-    return () => clearInterval(interval);
-  }, []);
-
-  async function fetchStatus() {
+  const fetchStatus = useCallback(async () => {
     try {
-      const response = await api.get('/status');
-      setStatus(response.data);
+      const data = await statusApi.getStatus();
+      setStatus(data);
       setError(null);
-      setLastUpdate(new Date());
-    } catch (err) {
-      console.error('Failed to fetch status:', err);
-      setError('Failed to load status. Check connection to backend.');
+      setLastUpdated(new Date());
+    } catch {
+      setError('Cannot reach Stratavore daemon. Check that stratavored is running.');
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
 
-  async function changeMode(mode: string) {
-    setModeChanging(true);
+  useEffect(() => {
+    fetchStatus();
+    const interval = setInterval(fetchStatus, POLL_INTERVAL_MS);
+    return () => clearInterval(interval);
+  }, [fetchStatus]);
+
+  async function handleReconcile() {
+    setReconciling(true);
     try {
-      await api.post('/status/mode', { mode });
+      const result = await statusApi.triggerReconcile();
       await fetchStatus();
-    } catch (err) {
-      console.error('Failed to change mode:', err);
-      setError(`Failed to change mode to ${mode}. Check backend connection.`);
+      if (result.failedRunnerIds?.length) {
+        setError(`Reconciliation found ${result.failedRunnerIds.length} failed runner(s).`);
+      }
+    } catch {
+      setError('Reconciliation failed.');
     } finally {
-      setModeChanging(false);
+      setReconciling(false);
     }
   }
 
-  const modeColors: Record<string, string> = {
-    IDLE: 'default',
-    AUTONOMOUS: 'processing',
-    DIRECTED: 'success',
-    COLLABORATIVE: 'warning',
-  };
-
-  const getModeIcon = (mode: string) => {
-    switch (mode) {
-      case 'AUTONOMOUS':
-        return <SyncOutlined spin />;
-      case 'IDLE':
-        return <PauseOutlined />;
-      default:
-        return <CheckCircleOutlined />;
-    }
-  };
+  const tokenPct = status && status.metrics.tokenLimit > 0
+    ? (status.metrics.tokensUsed / status.metrics.tokenLimit) * 100
+    : 0;
+  const tokenColor = tokenPct > 90 ? '#ff4d4f' : tokenPct > 70 ? '#faad14' : '#52c41a';
 
   return (
     <Layout>
@@ -92,7 +68,7 @@ export default function DashboardPage(): React.ReactElement {
       <Content style={{ padding: 24, minHeight: 'calc(100vh - 64px)' }}>
         {error && (
           <Alert
-            message="Status Error"
+            message="Connection Error"
             description={error}
             type="error"
             closable
@@ -101,137 +77,90 @@ export default function DashboardPage(): React.ReactElement {
           />
         )}
 
+        <Row gutter={[16, 16]} align="middle" style={{ marginBottom: 16 }}>
+          <Col>
+            <Title level={4} style={{ margin: 0 }}>Stratavore Control Plane</Title>
+          </Col>
+          <Col>
+            {loading && !status ? (
+              <Skeleton.Button active size="small" />
+            ) : (
+              <Tag
+                icon={status?.daemon.healthy ? <CheckCircleOutlined /> : <WarningOutlined />}
+                color={status?.daemon.healthy ? 'success' : 'error'}
+              >
+                {status?.daemon.healthy ? 'HEALTHY' : 'UNHEALTHY'}
+              </Tag>
+            )}
+          </Col>
+          <Col>
+            <Text type="secondary" style={{ fontSize: 12 }}>
+              {status ? `v${status.daemon.version} — ${status.daemon.hostname}` : ''}
+            </Text>
+          </Col>
+          <Col flex="auto" />
+          <Col>
+            <Space>
+              <Tooltip title="Trigger reconciliation — cleans up stale runners">
+                <Button
+                  icon={<SyncOutlined spin={reconciling} />}
+                  onClick={handleReconcile}
+                  loading={reconciling}
+                  size="small"
+                >
+                  Reconcile
+                </Button>
+              </Tooltip>
+              <Tooltip title={`Last updated: ${lastUpdated.toLocaleTimeString()}`}>
+                <Button icon={<ReloadOutlined />} onClick={fetchStatus} size="small" />
+              </Tooltip>
+            </Space>
+          </Col>
+        </Row>
+
         <Row gutter={[16, 16]}>
-          <Col xs={24} lg={12}>
-            <Card
-              title="Operational Status"
-              extra={
-                <Text type="secondary" style={{ fontSize: 12 }}>
-                  <ClockCircleOutlined /> Updated {lastUpdate.toLocaleTimeString()}
-                </Text>
-              }
-            >
+          <Col xs={12} sm={6}>
+            <Card>
               {loading && !status ? (
-                <Skeleton active paragraph={{ rows: 3 }} />
-              ) : status ? (
-                <>
-                  <Space direction="vertical" style={{ width: '100%' }} size="large">
-                    <div>
-                      <Text type="secondary">Current Mode</Text>
-                      <div style={{ marginTop: 8 }}>
-                        <Tag
-                          color={modeColors[status.mode]}
-                          icon={getModeIcon(status.mode)}
-                          style={{ fontSize: 16, padding: '4px 12px' }}
-                        >
-                          {status.mode}
-                        </Tag>
-                      </div>
-                    </div>
-
-                    <Divider style={{ margin: 0 }} />
-
-                    <div>
-                      <Text type="secondary">Active Project</Text>
-                      <div style={{ marginTop: 8 }}>
-                        <Text strong style={{ fontSize: 16 }}>
-                          {status.currentProject || 'None'}
-                        </Text>
-                      </div>
-                    </div>
-
-                    <Divider style={{ margin: 0 }} />
-
-                    <div>
-                      <Text type="secondary">Mode Controls</Text>
-                      <div style={{ marginTop: 12 }}>
-                        <Space>
-                          <Button
-                            type="primary"
-                            icon={<RocketOutlined />}
-                            onClick={() => changeMode('AUTONOMOUS')}
-                            loading={modeChanging}
-                            disabled={status.mode === 'AUTONOMOUS'}
-                          >
-                            Start Autonomous
-                          </Button>
-                          <Button
-                            icon={<PauseOutlined />}
-                            onClick={() => changeMode('IDLE')}
-                            loading={modeChanging}
-                            disabled={status.mode === 'IDLE'}
-                          >
-                            Stop
-                          </Button>
-                        </Space>
-                      </div>
-                    </div>
-                  </Space>
-                </>
+                <Skeleton active paragraph={false} />
               ) : (
-                <Alert
-                  message="No Status Data"
-                  description="Unable to load system status"
-                  type="warning"
+                <Statistic title="Active Runners" value={status?.metrics.activeRunners ?? 0} />
+              )}
+            </Card>
+          </Col>
+          <Col xs={12} sm={6}>
+            <Card>
+              {loading && !status ? (
+                <Skeleton active paragraph={false} />
+              ) : (
+                <Statistic title="Active Projects" value={status?.metrics.activeProjects ?? 0} />
+              )}
+            </Card>
+          </Col>
+          <Col xs={12} sm={6}>
+            <Card>
+              {loading && !status ? (
+                <Skeleton active paragraph={false} />
+              ) : (
+                <Statistic title="Total Sessions" value={status?.metrics.totalSessions ?? 0} />
+              )}
+            </Card>
+          </Col>
+          <Col xs={12} sm={6}>
+            <Card>
+              {loading && !status ? (
+                <Skeleton active paragraph={false} />
+              ) : (
+                <Statistic
+                  title="Tokens Used"
+                  value={status?.metrics.tokensUsed ?? 0}
+                  suffix={status?.metrics.tokenLimit ? `/ ${status.metrics.tokenLimit.toLocaleString()}` : ''}
+                  valueStyle={{ color: tokenColor }}
                 />
               )}
             </Card>
           </Col>
-
-          <Col xs={24} lg={12}>
-            <Card title="Quick Stats">
-              {loading && !status ? (
-                <Skeleton active paragraph={{ rows: 3 }} />
-              ) : status?.tokenBudget ? (
-                <Row gutter={16}>
-                  <Col span={12}>
-                    <Statistic
-                      title="Tokens Used Today"
-                      value={status.tokenBudget.used}
-                      suffix={`/ ${status.tokenBudget.dailyLimit}`}
-                      valueStyle={{
-                        color:
-                          status.tokenBudget.used / status.tokenBudget.dailyLimit > 0.9
-                            ? '#ff4d4f'
-                            : '#3f8600',
-                      }}
-                    />
-                  </Col>
-                  <Col span={12}>
-                    <Statistic
-                      title="Remaining Budget"
-                      value={status.tokenBudget.dailyLimit - status.tokenBudget.used}
-                      valueStyle={{ color: '#1890ff' }}
-                    />
-                  </Col>
-                </Row>
-              ) : (
-                <Alert message="Token budget data unavailable" type="info" />
-              )}
-            </Card>
-          </Col>
         </Row>
-
-        <Title level={4} style={{ marginTop: 24, marginBottom: 16 }}>
-          Token Budget Monitoring
-        </Title>
-        {status && status.tokenBudget ? (
-          <TokenBudgetChart
-            dailyLimit={status.tokenBudget.dailyLimit}
-            todayUsage={status.tokenBudget.used}
-            weekUsage={status.tokenBudget.weekUsage || status.tokenBudget.used}
-            monthUsage={status.tokenBudget.monthUsage || status.tokenBudget.used}
-            reservedForCommander={status.tokenBudget.reserved}
-          />
-        ) : (
-          <Card>
-            <Alert
-              message="Token Budget Data Unavailable"
-              description="Unable to load token budget charts. Check backend connection."
-              type="warning"
-            />
-          </Card>
-        )}
       </Content>
     </Layout>
   );

@@ -1,36 +1,22 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Layout } from 'antd';
-import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
+import RunnersPage from './pages/RunnersPage';
 import ProjectsPage from './pages/ProjectsPage';
-import LogsPage from './pages/LogsPage';
-import { Configuration } from './pages/Configuration';
-import { TaskBoard } from './pages/TaskBoard';
-import { ProjectGraph } from './pages/ProjectGraph';
-import { useAuth } from './contexts/AuthContext';
 
 const { Content } = Layout;
 
 function App(): React.ReactElement {
-  const { user, loading } = useAuth();
-
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
   return (
     <BrowserRouter>
       <Layout style={{ minHeight: '100vh' }}>
         <Content>
           <Routes>
-            <Route path="/login" element={user ? <Navigate to="/" /> : <LoginPage />} />
-            <Route path="/" element={user ? <DashboardPage /> : <Navigate to="/login" />} />
-            <Route path="/projects" element={user ? <ProjectsPage /> : <Navigate to="/login" />} />
-            <Route path="/projects/graph" element={user ? <ProjectGraph /> : <Navigate to="/login" />} />
-            <Route path="/logs" element={user ? <LogsPage /> : <Navigate to="/login" />} />
-            <Route path="/tasks" element={user ? <TaskBoard /> : <Navigate to="/login" />} />
-            <Route path="/config" element={user ? <Configuration /> : <Navigate to="/login" />} />
+            <Route path="/" element={<DashboardPage />} />
+            <Route path="/runners" element={<RunnersPage />} />
+            <Route path="/projects" element={<ProjectsPage />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </Content>
       </Layout>

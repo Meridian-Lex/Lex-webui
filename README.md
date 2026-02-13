@@ -1,6 +1,31 @@
-# Lex Fleet Command Interface (v1.0)
+# Lex Fleet Command Interface (v3)
 
 Comprehensive web interface for the Meridian Lex autonomous development system.
+
+## v3 — Stratavore Integration
+
+Lex-webui v3 connects directly to the [Stratavore](https://github.com/Meridian-Lex/Stratavore) control plane HTTP API. The Node.js v1 backend has been removed.
+
+### Quick start (development)
+
+```bash
+stratavored            # start the Stratavore daemon first
+cd frontend
+npm install
+npm run dev            # http://localhost:5173
+```
+
+### Quick start (Docker)
+
+```bash
+cp .env.example .env   # edit if Stratavore is not on localhost:8080
+docker compose up --build
+# http://localhost:80
+```
+
+### Architecture
+
+nginx serves the React SPA and proxies `/api/v1/*` to the Stratavore daemon (default `localhost:8080`). No separate backend process.
 
 ## Features
 

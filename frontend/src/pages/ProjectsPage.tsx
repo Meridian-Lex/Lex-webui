@@ -123,8 +123,8 @@ export default function ProjectsPage(): React.ReactElement {
         text: status,
         value: status,
       })),
-      onFilter: (value: string | number | boolean, record: Project) =>
-        record.status === value,
+      onFilter: (value: boolean | React.Key, record: Project) =>
+        record.status === String(value),
     },
     {
       title: 'Relationships',
@@ -154,10 +154,10 @@ export default function ProjectsPage(): React.ReactElement {
           {project.description}
         </Descriptions.Item>
       )}
-      {project.technologies && project.technologies.length > 0 && (
-        <Descriptions.Item label="Technologies" span={2}>
+      {project.tags && project.tags.length > 0 && (
+        <Descriptions.Item label="Tags" span={2}>
           <Space size="small" wrap>
-            {project.technologies.map((tech, idx) => (
+            {project.tags.map((tech, idx) => (
               <Tag key={idx}>{tech}</Tag>
             ))}
           </Space>
@@ -216,7 +216,7 @@ export default function ProjectsPage(): React.ReactElement {
               rowExpandable: (record) =>
                 Boolean(
                   record.description ||
-                    (record.technologies && record.technologies.length > 0) ||
+                    (record.tags && record.tags.length > 0) ||
                     (record.relationships && record.relationships.length > 0)
                 ),
             }}

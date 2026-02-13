@@ -26,6 +26,8 @@ export interface Project {
   status: string;
   lastActivity: string | null;
   relationships: string[];
+  description?: string;
+  tags?: string[];
 }
 
 export interface LogEntry {

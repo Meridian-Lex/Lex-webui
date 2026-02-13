@@ -1,22 +1,18 @@
 import React from 'react';
-import { Layout, Typography, Button } from 'antd';
+import { Layout, Typography } from 'antd';
 import { Link, useLocation } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
 import { ThemeToggle } from './ThemeToggle';
 
 const { Header } = Layout;
-const { Title, Text } = Typography;
+const { Title } = Typography;
 
 export const AppHeader: React.FC = () => {
-  const { user, logout } = useAuth();
   const location = useLocation();
 
   const navItems = [
     { path: '/', label: 'Dashboard' },
+    { path: '/runners', label: 'Runners' },
     { path: '/projects', label: 'Projects' },
-    { path: '/tasks', label: 'Tasks' },
-    { path: '/logs', label: 'Logs' },
-    { path: '/config', label: 'Configuration' },
   ];
 
   return (
@@ -34,9 +30,11 @@ export const AppHeader: React.FC = () => {
       </Title>
       <div>
         {navItems.map((item) => {
-          // Don't show link to current page
-          if (location.pathname === item.path ||
-              (item.path === '/projects' && location.pathname.startsWith('/projects'))) {
+          const isActive =
+            item.path === '/'
+              ? location.pathname === '/'
+              : location.pathname.startsWith(item.path);
+          if (isActive) {
             return null;
           }
           return (
@@ -50,10 +48,6 @@ export const AppHeader: React.FC = () => {
           );
         })}
         <ThemeToggle />
-        <Text style={{ color: 'white', marginRight: 16 }}>{user?.username}</Text>
-        <Button onClick={logout} size="small">
-          Logout
-        </Button>
       </div>
     </Header>
   );

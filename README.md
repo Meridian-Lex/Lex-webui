@@ -4,7 +4,7 @@ Comprehensive web interface for the Meridian Lex autonomous development system.
 
 ## v3 — Stratavore Integration
 
-Lex-webui v3 connects directly to the [Stratavore](https://github.com/Meridian-Lex/Stratavore) control plane HTTP API. The Node.js v1 backend has been removed.
+stratavore-ui v3 connects directly to the [Stratavore](https://github.com/Meridian-Lex/Stratavore) control plane HTTP API. The Node.js v1 backend has been removed.
 
 ### Quick start (development)
 

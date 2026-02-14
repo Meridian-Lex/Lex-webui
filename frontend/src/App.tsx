@@ -7,6 +7,7 @@ import ProjectsPage from './pages/ProjectsPage';
 import SessionsPage from './pages/SessionsPage';
 import MetricsPage from './pages/MetricsPage';
 import ProjectDetailPage from './pages/ProjectDetailPage';
+import FleetPRsPage from './pages/FleetPRsPage';
 
 const { Content } = Layout;
 
@@ -22,6 +23,7 @@ function App(): React.ReactElement {
             <Route path="/projects/:name" element={<ProjectDetailPage />} />
             <Route path="/sessions" element={<SessionsPage />} />
             <Route path="/metrics" element={<MetricsPage />} />
+            <Route path="/fleet-prs" element={<FleetPRsPage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </Content>

@@ -15,6 +15,7 @@ export const AppHeader: React.FC = () => {
     { path: '/projects', label: 'Projects' },
     { path: '/sessions', label: 'Sessions' },
     { path: '/metrics', label: 'Metrics' },
+    { path: '/fleet-prs', label: 'Fleet PRs' },
   ];
 
   return (
@@ -36,14 +37,16 @@ export const AppHeader: React.FC = () => {
             item.path === '/'
               ? location.pathname === '/'
               : location.pathname.startsWith(item.path);
-          if (isActive) {
-            return null;
-          }
           return (
             <Link
               key={item.path}
               to={item.path}
-              style={{ color: 'white', marginRight: 24 }}
+              style={{
+                color: 'white',
+                marginRight: 24,
+                fontWeight: isActive ? 'bold' : 'normal',
+                textDecoration: isActive ? 'underline' : 'none',
+              }}
             >
               {item.label}
             </Link>

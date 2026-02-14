@@ -15,6 +15,7 @@ export const AppHeader: React.FC = () => {
     { path: '/projects', label: 'Projects' },
     { path: '/sessions', label: 'Sessions' },
     { path: '/metrics', label: 'Metrics' },
+    { path: '/fleet-prs', label: 'Fleet PRs' },
   ];
 
   return (

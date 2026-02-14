@@ -37,14 +37,16 @@ export const AppHeader: React.FC = () => {
             item.path === '/'
               ? location.pathname === '/'
               : location.pathname.startsWith(item.path);
-          if (isActive) {
-            return null;
-          }
           return (
             <Link
               key={item.path}
               to={item.path}
-              style={{ color: 'white', marginRight: 24 }}
+              style={{
+                color: 'white',
+                marginRight: 24,
+                fontWeight: isActive ? 'bold' : 'normal',
+                textDecoration: isActive ? 'underline' : 'none',
+              }}
             >
               {item.label}
             </Link>

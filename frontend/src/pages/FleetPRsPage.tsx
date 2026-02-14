@@ -54,10 +54,10 @@ export default function FleetPRsPage(): React.ReactElement {
     return () => clearInterval(interval);
   }, [fetchPRs]);
 
-  async function handleRefresh() {
+  const handleRefresh = useCallback(async () => {
     setRefreshing(true);
     await fetchPRs(true);
-  }
+  }, [fetchPRs]);
 
   const columns: ColumnsType<FleetPR> = [
     {
